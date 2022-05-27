@@ -1,0 +1,12 @@
+.Rproj.user
+doc
+Meta
+.RData
+.Rhistory
+*.Rproj
+iscb2021tidytranscriptomics.Rcheck/
+iscb2021tidytranscriptomics*.tar.gz
+iscb2021tidytranscriptomics*.tgz
+dev
+/doc/
+/Meta/

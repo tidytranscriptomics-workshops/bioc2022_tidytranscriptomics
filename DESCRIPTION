@@ -1,0 +1,55 @@
+Package: bioc2022tidytranscriptomics
+Title: Introduction to Tidy Transcriptomics
+Version: 0.12.0
+Authors@R: c(
+    person("Maria", "Doyle", email="maria.doyle@petermac.org",
+    role = c("aut"),
+    comment = c(ORCID = "0000-0003-4847-8436")),
+    person("Stefano", "Mangiola", email="mangiola.s@wehi.edu.au",
+    role = c("aut","cre"),
+    comment = c(ORCID = "0000-0001-7474-836X")))
+Maintainer: Maria Doyle <maria.doyle@petermac.org>, Stefano Mangiola <mangiola.s@wehi.edu.au>
+Description: This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm, using the tidyseurat, tidySingleCellExperiment and tidyverse packages.
+License: CC BY-SA 4.0 + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Depends:
+    R (>= 4.0.0)
+Imports:
+    tidySingleCellExperiment,
+    tidyseurat,
+    tidygate,
+    Seurat,
+    SeuratWrappers,
+    stats,
+    utils,
+    tibble,
+    stringr,
+    ggplot2,
+    dplyr,
+    readr,
+    tidyr,
+    purrr,
+    forcats,
+    ggrepel,
+    plotly,
+    uwot,
+    igraph,
+    broom,
+    devtools,
+    rlang,
+    magrittr,
+    R.utils,
+    dittoSeq
+Suggests:
+    knitr,
+    rmarkdown,
+    pkgdown
+Remotes: satijalab/seurat-wrappers
+Biarch: true
+biocViews: RNASeq, DifferentialExpression, GeneExpression, Normalization, Clustering, QualityControl, Sequencing, SingleCell, Transcription, Transcriptomics
+URL: https://tidytranscriptomics-workshops.github.io/bioc2022_tidytranscriptomics/
+BugReports: https://github.com/tidytranscriptomics-workshops/bioc2022_tidytranscriptomics/issues/new/choose
+VignetteBuilder: knitr

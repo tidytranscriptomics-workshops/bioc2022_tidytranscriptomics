@@ -1,0 +1,69 @@
+---
+title: "solutions"
+author: "Stefano Mangiola and Maria Doyle"
+date: "2/18/2022"
+output: html_document
+---
+
+```{r message = FALSE}
+library(Seurat)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(colorspace)
+library(SeuratWrappers)
+library(dittoSeq)
+```
+
+## Question 1
+
+What is the proportion of gamma-delta T cells, among all cells?
+
+```{r, eval=FALSE}
+
+seurat_obj |>
+  
+  
+  join_features(
+    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),
+    shape = "wide",
+    assay = "SCT"
+    
+  ) |>
+  
+  mutate(signature_score =
+           scales::rescale(CD3D + TRDC + TRGC1+ TRGC2, to=c(0,1)) -
+           scales::rescale(CD8A + CD8B, to=c(0,1))
+  ) |>
+
+  mutate(gate = tidygate::gate_int(
+    UMAP_1, UMAP_2, 
+    .size = 0.1, 
+    .color =signature_score
+  )) |>
+  
+  count(gate) %>% 
+  summarise(proportion = n/sum(n))
+
+
+```
+
+## Question 2
+
+There is a cluster of cells characterised by a low RNA output (nCount_RNA). Use tidygate to asses the cell composition (curated_cell_type) of that cluster.
+
+
+```{r, eval=FALSE}
+
+seurat_obj |>
+
+    mutate(gate = tidygate::gate_int(
+        UMAP_1, UMAP_2, 
+        .size = 0.1, 
+        .color =nCount_RNA 
+    )) %>% 
+  
+    filter(gate==1) %>% 
+    count(curated_cell_type)
+
+```
