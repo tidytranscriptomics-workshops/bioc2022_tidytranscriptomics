@@ -1,8 +1,11 @@
 ---
 title: "solutions"
 author: "Stefano Mangiola and Maria Doyle"
-date: "2/18/2022"
-output: html_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Solutions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r message = FALSE}
