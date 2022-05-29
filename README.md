@@ -5,7 +5,7 @@
 
 # Introduction to Tidy Transcriptomics
 <p float="left">
-<img height="100" width="300" alt="BioC2022" src="https://bioc2022.bioconductor.org/img/carousel/BioC2022.png"/>
+<img height="100" alt="BioC2022" src="https://bioc2022.bioconductor.org/img/carousel/BioC2022.png"/>
 <img height="100" alt="tidybulk" src="https://github.com/Bioconductor/BiocStickers/blob/master/tidybulk/tidybulk.png?raw=true"/>
 </p>
 
