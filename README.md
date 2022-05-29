@@ -33,7 +33,7 @@ If you want to install the packages and material post-workshop, the instructions
 Sys.setenv("R_REMOTES_NO_ERRORS_FROM_WARNINGS" = "true")
 
 # Install same versions used in the workshop
-remotes::install_github("stemangiola/tidySingleCellExperiment@v1.7.0")
+remotes::install_github("stemangiola/tidySingleCellExperiment@v1.7.2")
 
 # Install workshop package
 
@@ -50,7 +50,7 @@ To run the code, you could then copy and paste the code from the workshop vignet
 
 This tutorial will present how to perform analysis of single-cell RNA sequencing data following the tidy data paradigm. The tidy data paradigm provides a standard way to organise data values within a dataset, where each variable is a column, each observation is a row, and data is manipulated using an easy-to-understand vocabulary. Most importantly, the data structure remains consistent across manipulation and analysis functions.
 
-This can be achieved with the integration of packages present in the R CRAN and Bioconductor ecosystem, including [tidySingleCellExperiment](https://stemangiola.github.io/tidySingleCellExperiment/), [tidyseurat](https://stemangiola.github.io/tidyseurat/) and [tidyverse](https://www.tidyverse.org/). These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data representation and analysis. For more information see the [tidy transcriptomics blog](https://stemangiola.github.io/tidytranscriptomics/).
+This can be achieved with the integration of packages present in the R CRAN and Bioconductor ecosystem, including [tidySingleCellExperiment](https://stemangiola.github.io/tidySingleCellExperiment/) and [tidyverse](https://www.tidyverse.org/). These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data representation and analysis. For more information see the [tidy transcriptomics blog](https://stemangiola.github.io/tidytranscriptomics/).
 
 ### Pre-requisites
 
@@ -89,4 +89,3 @@ The workshop format is a 1.5 hour session consisting of hands-on demos, exercise
 * The molecular technology of single-cell sequencing
 * The fundamentals of single-cell data analysis
 * The fundamentals of tidy data analysis
-

@@ -38,7 +38,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Workshop goals and objectives
 
-This workshop will demonstrate a real-world example of using tidy transcriptomics packages, such as tidyseurat, to perform a single cell analysis.
+This workshop will demonstrate a real-world example of using tidy transcriptomics packages, such as tidySingleCellExperiment, to perform a single cell analysis.
 
 This workshop is not a step-by-step introduction in how to perform single-cell analysis. For an overview of single-cell analysis steps performed in a tidy way please see the [ISMB2021 workshop](https://tidytranscriptomics-workshops.github.io/ismb2021_tidytranscriptomics/articles/tidytranscriptomics.html).
 
@@ -58,68 +58,67 @@ We will use the Orchestra Cloud platform during the BioC2022 workshop and this m
 Alternatively, you can view the material at the workshop webpage [here](https://tidytranscriptomics-workshops.github.io/bioc2022_tidytranscriptomics/articles/tidytranscriptomics_case_study.html).
 
 ```{r message = FALSE}
-library(Seurat)
+library(SingleCellExperiment)
 library(ggplot2)
 library(plotly)
 library(dplyr)
 library(colorspace)
-library(SeuratWrappers)
 library(dittoSeq)
 ```
 
 
-## Introduction to tidyseurat
+## Introduction to tidySingleCellExperiment
 
-Seurat is a very popular analysis toolkit for single cell RNA sequencing data [@butler2018integrating; @stuart2019comprehensive].
+SingleCellExperiment is a very popular analysis toolkit for single cell RNA sequencing data [@butler2018integrating; @stuart2019comprehensive].
 
-Here we load single-cell data in Seurat object format. This data is peripheral blood mononuclear cells (PBMCs) from metastatic breast cancer patients.
+Here we load single-cell data in SingleCellExperiment object format. This data is peripheral blood mononuclear cells (PBMCs) from metastatic breast cancer patients.
 
 ```{r}
 # load single cell RNA sequencing data
-seurat_obj <- bioc2022tidytranscriptomics::seurat_obj
+sce_obj <- bioc2022tidytranscriptomics::sce_obj
 
 # take a look
-seurat_obj
+sce_obj
 ```
 
-tidyseurat provides a bridge between the Seurat single-cell package and the tidyverse [@wickham2019welcome]. It creates an invisible layer that enables viewing the Seurat object as a tidyverse tibble, and provides Seurat-compatible *dplyr*, *tidyr*, *ggplot* and *plotly* functions.
+tidySingleCellExperiment provides a bridge between the SingleCellExperiment single-cell package and the tidyverse [@wickham2019welcome]. It creates an invisible layer that enables viewing the SingleCellExperiment object as a tidyverse tibble, and provides SingleCellExperiment-compatible *dplyr*, *tidyr*, *ggplot* and *plotly* functions.
 
-If we load the *tidyseurat* package and then view the single cell data, it now displays as a tibble.
+If we load the *tidySingleCellExperiment* package and then view the single cell data, it now displays as a tibble.
 
 ```{r message = FALSE}
-library(tidyseurat)
+library(tidySingleCellExperiment)
 
-seurat_obj 
+sce_obj
 ```
 
-It can be interacted with using [Seurat commands](https://satijalab.org/seurat/articles/essential_commands.html) such as `Assays`.
+It can be interacted with using [SingleCellExperiment commands](https://bioconductor.org/packages/devel/bioc/vignettes/SingleCellExperiment/inst/doc/intro.html) such as `assay`.
 
 ```{r}
-Assays(seurat_obj)
+Assays(sce_obj)
 ```
 
 We can also interact with our object as we do with any tidyverse tibble.
 
 ### Tidyverse commands
 
-We can use tidyverse commands, such as `filter`, `select` and `mutate` to explore the tidyseurat object. Some examples are shown below and more can be seen at the tidyseurat website [here](https://stemangiola.github.io/tidyseurat/articles/introduction.html#tidyverse-commands-1).
+We can use tidyverse commands, such as `filter`, `select` and `mutate` to explore the tidySingleCellExperiment object. Some examples are shown below and more can be seen at the tidySingleCellExperiment website [here](https://stemangiola.github.io/tidySingleCellExperiment/articles/introduction.html#tidyverse-commands-1).
 
 We can use `filter` to choose rows, for example, to see just the rows for the cells in G1 cell-cycle stage. Check if have groups or ident present.
 
 ```{r}
-seurat_obj |> filter(Phase == "G1")
+sce_obj |> filter(Phase == "G1")
 ```
 
 We can use `select` to choose columns, for example, to see the sample, cell, total cellular RNA
 
 ```{r}
-seurat_obj |> select(.cell, nCount_RNA, Phase)
+sce_obj |> select(.cell, nCount_RNA, Phase)
 ```
 
 We can use `mutate` to create a column. For example, we could create a new `ident_l` column that contains a lower-case version of `ident`.
 
 ```{r}
-seurat_obj |>
+sce_obj |>
   mutate(Phase_l=tolower(Phase)) |>
   # select columns to view    
   select(Phase, Phase_l)
@@ -129,27 +128,27 @@ We can use tidyverse commands to polish an annotation column. We will extract th
 
 ```{r}
 # First take a look at the file column
-seurat_obj |> select(file)
+sce_obj |> select(file)
 ```
 
 ```{r}
 # Create columns for sample and group
-seurat_obj <- seurat_obj |>
+sce_obj <- sce_obj |>
 
 # Extract sample and group
   extract(file, "sample", "../data/.*/([a-zA-Z0-9_-]+)/outs.+", remove = FALSE)
 
 # Take a look
-seurat_obj |> select(sample)
+sce_obj |> select(sample)
 ```
 
-We could use tidyverse `unite` to combine columns, for example to create a new column for sample id combining the sample and BCB columns. 
+We could use tidyverse `unite` to combine columns, for example to create a new column for sample id combining the sample and BCB columns.
 
 ```{r}
-seurat_obj <- seurat_obj |> unite("sample_id", sample, BCB, remove = FALSE)
+sce_obj <- sce_obj |> unite("sample_id", sample, BCB, remove = FALSE)
 
 # Take a look
-seurat_obj |> select(sample_id, sample, BCB)
+sce_obj |> select(sample_id, sample, BCB)
 ```
 
 
@@ -157,15 +156,15 @@ seurat_obj |> select(sample_id, sample, BCB)
 
 ### Data pre-processing
 
-The object `seurat_obj` we've been using was created as part of a study on breast cancer systemic immune response. Peripheral blood mononuclear cells have been sequenced for RNA at the single-cell level. The steps used to generate the object are summarised below.
+The object `sce_obj` we've been using was created as part of a study on breast cancer systemic immune response. Peripheral blood mononuclear cells have been sequenced for RNA at the single-cell level. The steps used to generate the object are summarised below.
 
 -   `scran`, `scater`, and `DropletsUtils` packages have been used to eliminate empty droplets and dead cells. Samples were individually quality checked and cells were filtered for good gene coverage.
 
--   Variable features were identified using `Seurat`.
+-   Variable features were identified using `modelGeneVar`.
 
--   Read counts were scaled and normalised using SCTtransform from `Seurat`.
+-   Read counts were scaled and normalised using logNormCounts from `scuttle`.
 
--   Data integration was performed using `Seurat` with default parameters.
+-   Data integration was performed using `fastMNN` with default parameters.
 
 -   PCA performed to reduce feature dimensionality.
 
@@ -173,94 +172,94 @@ The object `seurat_obj` we've been using was created as part of a study on breas
 
 -   2 UMAP dimensions were calculated using 30 principal components.
 
--   Cells with similar transcriptome profiles were grouped into clusters using Louvain clustering from `Seurat`.
+-   Cells with similar transcriptome profiles were grouped into clusters using Louvain clustering from `scran`.
 
 ### Analyse custom signature
 
-The researcher analysing this dataset wanted to to identify gamma delta T cells using a gene signature from a published paper [@Pizzolato2019]. 
+The researcher analysing this dataset wanted to to identify gamma delta T cells using a gene signature from a published paper [@Pizzolato2019].
 
-With tidyseurat's `join_features` the counts for the genes could be viewed as columns.
+With tidySingleCellExperiment's `join_features` the counts for the genes could be viewed as columns.
 
 ```{r}
 
-seurat_obj |>
-  
-  
+sce_obj |>
+
+
   join_features(
     features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),
     shape = "wide",
     assay = "SCT"
-  ) 
+  )
 ```
 
 
-They were able to use tidyseurat's `join_features` to select the counts for the genes in the signature, followed by tidyverse `mutate` to easily create a column containing the signature score.
+They were able to use tidySingleCellExperiment's `join_features` to select the counts for the genes in the signature, followed by tidyverse `mutate` to easily create a column containing the signature score.
 
 ```{r}
 
-seurat_obj |>
-  
-  
+sce_obj |>
+
+
   join_features(
     features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),
     shape = "wide",
     assay = "SCT"
-    
+
   ) |>
-  
+
   mutate(signature_score =
            scales::rescale(CD3D + TRDC + TRGC1 + TRGC2, to=c(0,1)) -
            scales::rescale(CD8A + CD8B, to=c(0,1))
   ) |>
-  
+
   select(signature_score, everything())
 ```
 
-The gamma delta T cells could then be visualised by the signature score using Seurat's visualisation functions.
+The gamma delta T cells could then be visualised by the signature score using Bioconductor's visualisation functions.
 
 ```{r}
 
-seurat_obj |>
-  
-  
+sce_obj |>
+
+
   join_features(
     features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),
     shape = "wide",
     assay = "SCT"
-    
+
   ) |>
-  
+
   mutate(signature_score =
            scales::rescale(CD3D + TRDC + TRGC1+ TRGC2, to=c(0,1)) -
            scales::rescale(CD8A + CD8B, to=c(0,1))
   ) |>
-  
-  Seurat::FeaturePlot(features =  "signature_score", min.cutoff = 0) 
+
+  SingleCellExperiment::FeaturePlot(features =  "signature_score", min.cutoff = 0)
 ```
 
 The cells could also be visualised using the popular and powerful ggplot package, enabling the researcher to use ggplot functions they were familiar with, and to customise the plot with great flexibility.
 
 ```{r}
 
-seurat_obj |>
-  
-  
+sce_obj |>
+
+
   join_features(
     features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),
     shape = "wide",
     assay = "SCT"
-    
+
   ) |>
-  
+
   mutate(signature_score =
            scales::rescale(CD3D + TRDC + TRGC1+ TRGC2, to=c(0,1)) -
            scales::rescale(CD8A + CD8B, to=c(0,1))
   ) |>
-  
+
   mutate(signature_score = case_when(signature_score>0 ~ signature_score)) |>
   ggplot(aes(UMAP_1, UMAP_2, color = signature_score)) +
   geom_point(shape="." ) +
-  scale_color_continuous_sequential(palette = "Blues", na.value = "grey") + 
+  scale_color_continuous_sequential(palette = "Blues", na.value = "grey") +
   theme_bw()
 ```
 
@@ -268,24 +267,24 @@ The gamma delta T cells (the blue cluster on the left with high signature score)
 
 ```{r eval=FALSE}
 
-seurat_obj |>
-  
-  
+sce_obj |>
+
+
   join_features(
     features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),
     shape = "wide",
     assay = "SCT"
-    
+
   ) |>
-  
+
   mutate(signature_score =
            scales::rescale(CD3D + TRDC + TRGC1+ TRGC2, to=c(0,1)) -
            scales::rescale(CD8A + CD8B, to=c(0,1))
   ) |>
 
   mutate(gate = tidygate::gate_int(
-    UMAP_1, UMAP_2, 
-    .size = 0.1, 
+    UMAP_1, UMAP_2,
+    .size = 0.1,
     .color =signature_score
   ))
 
@@ -295,25 +294,25 @@ After the selection we can reload from file the gate drawn for reproducibility.
 
 ```{r eval=FALSE}
 
-seurat_obj |>
-  
+sce_obj |>
+
   join_features(
     features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),
     shape = "wide",
     assay = "SCT"
-    
+
   ) |>
-  
+
   mutate(signature_score =
            scales::rescale(CD3D + TRDC + TRGC1+ TRGC2, to=c(0,1)) -
            scales::rescale(CD8A + CD8B, to=c(0,1))
   ) |>
 
   mutate(gate = tidygate::gate_int(
-    UMAP_1, UMAP_2, 
-    .size = 0.1, 
+    UMAP_1, UMAP_2,
+    .size = 0.1,
     .color =signature_score,
-    gate_list = bioc2022tidytranscriptomics::gate_seurat_obj
+    gate_list = bioc2022tidytranscriptomics::gate_sce_obj
   ))
 
 ```
@@ -322,116 +321,116 @@ And the dataset could be filtered for just these cells using tidyverse `filter`.
 
 ```{r}
 
-seurat_obj |>
-  
-  
+sce_obj |>
+
+
   join_features(
     features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),
     shape = "wide",
     assay = "SCT"
-    
+
   ) |>
-  
+
   mutate(signature_score =
            scales::rescale(CD3D + TRDC + TRGC1+ TRGC2, to=c(0,1)) -
            scales::rescale(CD8A + CD8B, to=c(0,1))
   ) |>
-  
-  mutate(gate = tidygate::gate_int(UMAP_1, UMAP_2, gate_list = bioc2022tidytranscriptomics::gate_seurat_obj)) |> 
-  
-  filter(gate == 1) 
+
+  mutate(gate = tidygate::gate_int(UMAP_1, UMAP_2, gate_list = bioc2022tidytranscriptomics::gate_sce_obj)) |>
+
+  filter(gate == 1)
 ```
 
 It was then possible to perform analyses on these gamma delta T cells by simply chaining further commands, such as below.
 
 ```{r eval = FALSE}
 
-seurat_obj |>
-  
-  
+sce_obj |>
+
+
   join_features(
     features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),
     shape = "wide",
     assay = "SCT"
-    
+
   ) |>
-  
+
   mutate(signature_score =
            scales::rescale(CD3D + TRDC + TRGC1+ TRGC2, to=c(0,1)) -
            scales::rescale(CD8A + CD8B, to=c(0,1))
   ) |>
-  
-  mutate( gate = tidygate::gate_int(UMAP_1, UMAP_2, gate_list = bioc2022tidytranscriptomics::gate_seurat_obj) ) |> 
-  
+
+  mutate( gate = tidygate::gate_int(UMAP_1, UMAP_2, gate_list = bioc2022tidytranscriptomics::gate_sce_obj) ) |>
+
   filter(gate == 1) |>
-  
+
   # Reanalyse
-  NormalizeData(assay="RNA") |> 
+  NormalizeData(assay="RNA") |>
   FindVariableFeatures( nfeatures = 100, assay="RNA") |>
-  SplitObject(split.by = "file") |> 
-  RunFastMNN(assay="RNA") |> 
-  RunUMAP(reduction = "mnn", dims = 1:20) |> 
-  FindNeighbors( dims = 1:20, reduction = "mnn") |> 
+  SplitObject(split.by = "file") |>
+  RunFastMNN(assay="RNA") |>
+  RunUMAP(reduction = "mnn", dims = 1:20) |>
+  FindNeighbors( dims = 1:20, reduction = "mnn") |>
   FindClusters( resolution = 0.3)
 ```
 
-For comparison, we show the alternative using base R and Seurat
+For comparison, we show the alternative using base R and SingleCellExperiment
 
 ```{r eval = FALSE}
 
-counts_positive = 
-  GetAssayData(seurat_obj, assay="SCT")[c("CD3D", "TRDC", "TRGC1", "TRGC2"),] |> 
-  colSums() |> 
-  scales::rescale(to=c(0,1)) 
+counts_positive =
+  GetAssayData(sce_obj, assay="SCT")[c("CD3D", "TRDC", "TRGC1", "TRGC2"),] |>
+  colSums() |>
+  scales::rescale(to=c(0,1))
 
-counts_negative = 
-  GetAssayData(seurat_obj, assay="SCT")[c("CD8A", "CD8B"),] |> 
-  colSums()  |> 
-  scales::rescale(to=c(0,1)) 
+counts_negative =
+  GetAssayData(sce_obj, assay="SCT")[c("CD8A", "CD8B"),] |>
+  colSums()  |>
+  scales::rescale(to=c(0,1))
 
-seurat_obj$signature_score = counts_positive - counts_negative
+sce_obj$signature_score = counts_positive - counts_negative
 
-p = FeaturePlot(seurat_obj, features = "signature_score")
+p = FeaturePlot(sce_obj, features = "signature_score")
 
 # This is not reproducible (on the contrary of tidygate)
-seurat_obj$within_gate = colnames(seurat_obj) %in% CellSelector(plot = p)
+sce_obj$within_gate = colnames(sce_obj) %in% CellSelector(plot = p)
 
-seurat_obj |> 
+sce_obj |>
   subset(within_gate == TRUE) |>
-  
+
   # Reanalyse
-  NormalizeData(assay="RNA") |> 
+  NormalizeData(assay="RNA") |>
   FindVariableFeatures( nfeatures = 100, assay="RNA") |>
-  SplitObject(split.by = "file") |> 
-  RunFastMNN(assay="RNA") |> 
-  RunUMAP(reduction = "mnn", dims = 1:20) |> 
-  FindNeighbors( dims = 1:20, reduction = "mnn") |> 
+  SplitObject(split.by = "file") |>
+  RunFastMNN(assay="RNA") |>
+  RunUMAP(reduction = "mnn", dims = 1:20) |>
+  FindNeighbors( dims = 1:20, reduction = "mnn") |>
   FindClusters( resolution = 0.3)
 ```
 
-It was also possible to visualise the cells as a 3D plot using plotly. 
+It was also possible to visualise the cells as a 3D plot using plotly.
 The example data used here only contains a few genes, for the sake of time and size in this demonstration, but below is how you could generate the 3 dimensions needed for 3D plot with a full dataset.
 
 ```{r eval = FALSE}
-single_cell_object |> 
+single_cell_object |>
   RunUMAP(dims = 1:30, n.components = 3L, spread = 0.5,min.dist  = 0.01, n.neighbors = 10L)
 ```
-  
+
 We'll demonstrate creating a 3D plot using some data that has 3 UMAP dimensions.
 
 ```{r umap plot 2, message = FALSE, warning = FALSE}
-pbmc = bioc2022tidytranscriptomics::seurat_obj_UMAP3
+pbmc = bioc2022tidytranscriptomics::sce_obj_UMAP3
 
 pbmc |>
-    
+
   plot_ly(
     x = ~`UMAP_1`,
     y = ~`UMAP_2`,
     z = ~`UMAP_3`,
     color = ~curated_cell_type,
     colors = dittoSeq::dittoColors()
-  ) %>% 
-  
+  ) %>%
+
    add_markers(size = I(1))
 
 ```

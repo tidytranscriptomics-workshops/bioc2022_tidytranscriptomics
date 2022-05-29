@@ -1,6 +1,6 @@
 Package: bioc2022tidytranscriptomics
 Title: Introduction to Tidy Transcriptomics
-Version: 0.12.0
+Version: 0.13.0
 Authors@R: c(
     person("Maria", "Doyle", email="maria.doyle@petermac.org",
     role = c("aut"),
@@ -9,7 +9,7 @@ Authors@R: c(
     role = c("aut","cre"),
     comment = c(ORCID = "0000-0001-7474-836X")))
 Maintainer: Maria Doyle <maria.doyle@petermac.org>, Stefano Mangiola <mangiola.s@wehi.edu.au>
-Description: This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm, using the tidyseurat, tidySingleCellExperiment and tidyverse packages.
+Description: This workshop will present how to perform analysis of RNA sequencing data following the tidy data paradigm, using the tidySingleCellExperiment and tidyverse packages.
 License: CC BY-SA 4.0 + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -19,10 +19,7 @@ Depends:
     R (>= 4.0.0)
 Imports:
     tidySingleCellExperiment,
-    tidyseurat,
     tidygate,
-    Seurat,
-    SeuratWrappers,
     stats,
     utils,
     tibble,
@@ -47,7 +44,6 @@ Suggests:
     knitr,
     rmarkdown,
     pkgdown
-Remotes: satijalab/seurat-wrappers
 Biarch: true
 biocViews: RNASeq, DifferentialExpression, GeneExpression, Normalization, Clustering, QualityControl, Sequencing, SingleCell, Transcription, Transcriptomics
 URL: https://tidytranscriptomics-workshops.github.io/bioc2022_tidytranscriptomics/
