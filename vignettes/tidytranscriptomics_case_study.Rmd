@@ -46,16 +46,16 @@ This workshop is not a step-by-step introduction in how to perform single-cell a
 
 ### Cloud
 
-Easiest way to run this material. Only available during workshop. Many thanks to the Australian Research Data Commons (ARDC) for providing RStudio in the Australian Nectar Research Cloud and Andy Botting from ARDC for helping to set up.
+Easiest way to run this material. We will use the Orchestra Cloud platform during the BioC2022 workshop.
 
--   Login to one of the servers (e.g. <https://rstudio5.tidytranscriptomics-workshop.cloud.edu.au/rstudio/>) with one of the usernames and passwords from the spreadsheet provided at the workshop. Add your name into the spreadsheet beside the login you're using.
--   Open `tidytranscriptomics_case_study.Rmd` in `ismb2022_tidytranscriptomcs/vignettes` folder
+-   Using the URL provided launch the workshop **There are several tidy transcriptomics workshops. Be sure to select the Bioc 2022 one**.
+-   Open `tidytranscriptomics_case_study.Rmd` in `bioc2022_tidytranscriptomcs/vignettes` folder
 
 ### Local
 
-We will use the Cloud during the ISCB workshop and this method is available if you want to run the material after the workshop. If you want to install on your own computer, see instructions [here](https://tidytranscriptomics-workshops.github.io/ismb2022_tidytranscriptomics/index.html#workshop-package-installation).
+We will use the Orchestra Cloud platform during the BioC2022 workshop and this method is available if you want to run the material after the workshop. If you want to install on your own computer, see instructions [here](https://tidytranscriptomics-workshops.github.io/bioc2022_tidytranscriptomics/index.html#workshop-package-installation).
 
-Alternatively, you can view the material at the workshop webpage [here](https://tidytranscriptomics-workshops.github.io/ismb2022_tidytranscriptomics/articles/tidytranscriptomics_case_study.html).
+Alternatively, you can view the material at the workshop webpage [here](https://tidytranscriptomics-workshops.github.io/bioc2022_tidytranscriptomics/articles/tidytranscriptomics_case_study.html).
 
 ```{r message = FALSE}
 library(SingleCellExperiment)
