@@ -185,11 +185,7 @@ With tidySingleCellExperiment's `join_features` the counts for the genes could b
 sce_obj |>
 
 
-  join_features(
-    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),
-    shape = "wide",
-    assay = "SCT"
-  )
+  join_features( c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"), shape = "wide"  )
 ```
 
 
@@ -200,12 +196,7 @@ They were able to use tidySingleCellExperiment's `join_features` to select the c
 sce_obj |>
 
 
-  join_features(
-    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),
-    shape = "wide",
-    assay = "SCT"
-
-  ) |>
+  join_features(  c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"), shape = "wide"  ) |>
 
   mutate(signature_score =
            scales::rescale(CD3D + TRDC + TRGC1 + TRGC2, to=c(0,1)) -
@@ -223,7 +214,7 @@ sce_obj |>
 
 
   join_features(
-    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),
+    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B", shape = "wide" ),
     shape = "wide",
     assay = "SCT"
 
@@ -245,7 +236,7 @@ sce_obj |>
 
 
   join_features(
-    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),
+    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B", shape = "wide" ),
     shape = "wide",
     assay = "SCT"
 
@@ -271,7 +262,7 @@ sce_obj |>
 
 
   join_features(
-    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),
+    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B", shape = "wide" ),
     shape = "wide",
     assay = "SCT"
 
@@ -297,7 +288,7 @@ After the selection we can reload from file the gate drawn for reproducibility.
 sce_obj |>
 
   join_features(
-    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),
+    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B", shape = "wide" ),
     shape = "wide",
     assay = "SCT"
 
@@ -325,7 +316,7 @@ sce_obj |>
 
 
   join_features(
-    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),
+    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B", shape = "wide" ),
     shape = "wide",
     assay = "SCT"
 
@@ -349,7 +340,7 @@ sce_obj |>
 
 
   join_features(
-    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),
+    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B", shape = "wide" ),
     shape = "wide",
     assay = "SCT"
 
