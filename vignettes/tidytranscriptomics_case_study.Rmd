@@ -214,18 +214,15 @@ sce_obj |>
 
 
   join_features(
-    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B", shape = "wide" ),
-    shape = "wide",
-    assay = "SCT"
-
-  ) |>
+    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B" ),  shape = "wide" ) |>
 
   mutate(signature_score =
            scales::rescale(CD3D + TRDC + TRGC1+ TRGC2, to=c(0,1)) -
            scales::rescale(CD8A + CD8B, to=c(0,1))
   ) |>
 
-  SingleCellExperiment::FeaturePlot(features =  "signature_score", min.cutoff = 0)
+	scater::plotUMAP(colour_by = "signature_score")
+
 ```
 
 The cells could also be visualised using the popular and powerful ggplot package, enabling the researcher to use ggplot functions they were familiar with, and to customise the plot with great flexibility.
@@ -236,10 +233,7 @@ sce_obj |>
 
 
   join_features(
-    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B", shape = "wide" ),
-    shape = "wide",
-    assay = "SCT"
-
+    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B" ),  shape = "wide"
   ) |>
 
   mutate(signature_score =
@@ -247,10 +241,12 @@ sce_obj |>
            scales::rescale(CD8A + CD8B, to=c(0,1))
   ) |>
 
-  mutate(signature_score = case_when(signature_score>0 ~ signature_score)) |>
+  #mutate(signature_score = case_when(signature_score>0 ~ signature_score)) |>
+	arrange(signature_score) |>
   ggplot(aes(UMAP_1, UMAP_2, color = signature_score)) +
-  geom_point(shape="." ) +
-  scale_color_continuous_sequential(palette = "Blues", na.value = "grey") +
+  geom_point() +
+	scale_color_distiller(palette="Spectral") +
+  #scale_color_continuous_sequential(palette = "Blues", na.value = "grey") +
   theme_bw()
 ```
 
@@ -262,10 +258,7 @@ sce_obj |>
 
 
   join_features(
-    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B", shape = "wide" ),
-    shape = "wide",
-    assay = "SCT"
-
+    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B" ), shape = "wide"
   ) |>
 
   mutate(signature_score =
@@ -288,9 +281,7 @@ After the selection we can reload from file the gate drawn for reproducibility.
 sce_obj |>
 
   join_features(
-    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B", shape = "wide" ),
-    shape = "wide",
-    assay = "SCT"
+    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B" ), shape = "wide"
 
   ) |>
 
@@ -316,9 +307,7 @@ sce_obj |>
 
 
   join_features(
-    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B", shape = "wide" ),
-    shape = "wide",
-    assay = "SCT"
+    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B" ), shape = "wide"
 
   ) |>
 
@@ -340,9 +329,7 @@ sce_obj |>
 
 
   join_features(
-    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B", shape = "wide" ),
-    shape = "wide",
-    assay = "SCT"
+    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),   shape = "wide"
 
   ) |>
 

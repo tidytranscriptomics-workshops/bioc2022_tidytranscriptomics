@@ -1,10 +1,14 @@
+library(Seurat)
+library(tidyseurat)
 
 seurat_obj <- readRDS("/stornext/Bioinf/data/bioinf-data/Papenfuss_lab/projects/mangiola.s/PostDoc/oligo_breast/expanded_analyses_with_control/cancer_only_analyses/lymphoid/cancer_lymphoid_cell_type_curated.rds")
 
 set.seed(123)
-seurat_obj = seurat_obj |> RunPCA() |> select(-contains("UMAP")) |> RunUMAP(dims=1:20)
+seurat_obj = seurat_obj |> RunPCA(npcs = 20) |> select(-contains("UMAP")) |> RunUMAP(dims=1:20)
 seurat_obj = seurat_obj |> select(.cell, file, 3, 8, 9, S.Score, G2M.Score , Phase , curated_cell_type , contains("UMAP"))
+
 seurat_obj = seurat_obj %>% filter(.cell %in% (seurat_obj %>% sample_n(3000) %>%  pull(.cell) %>% c(seurat_obj %>% filter(grepl("Delta", curated_cell_type)) %>% pull(.cell)) %>% unique))
+
 seurat_obj = seurat_obj %>% FindVariableFeatures(assay="RNA", nfeatures = 500)
 seurat_obj = seurat_obj[VariableFeatures(seurat_obj, assay="RNA") %>% c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),]
 seurat_obj = seurat_obj %>% mutate(
