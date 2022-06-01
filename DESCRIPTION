@@ -20,6 +20,7 @@ Depends:
 Imports:
     tidySingleCellExperiment,
     tidygate,
+    scater,
     stats,
     utils,
     tibble,
@@ -32,6 +33,7 @@ Imports:
     forcats,
     ggrepel,
     plotly,
+    colorspace,
     uwot,
     igraph,
     broom,
