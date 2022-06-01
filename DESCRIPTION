@@ -53,3 +53,4 @@ biocViews: RNASeq, DifferentialExpression, GeneExpression, Normalization, Cluste
 URL: https://tidytranscriptomics-workshops.github.io/bioc2022_tidytranscriptomics/
 BugReports: https://github.com/tidytranscriptomics-workshops/bioc2022_tidytranscriptomics/issues/new/choose
 VignetteBuilder: knitr
+DockerImage: ghcr.io/tidytranscriptomics-workshops/bioc2022_tidytranscriptomics:latest
