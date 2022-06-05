@@ -46,9 +46,7 @@ The workshop format is a 1.5 hour session consisting of hands-on demos, exercise
 
 ## Syllabus
 
-Material [web page](https://tidytranscriptomics-workshops.github.io/bioc2022_tidytranscriptomics/articles/tidytranscriptomics_case_study.html).
-
-More details on the workshop are below.
+Material [web page](https://tidytranscriptomics-workshops.github.io/bioc2022_tidytranscriptomics/articles/tidytranscriptomics_case_study.html). More details on the workshop are below.
 
 ## Workshop package installation 
 
