@@ -76,19 +76,59 @@
 <p float="left">
 <img style="height:100px;" alt="BioC2022" src="https://bioc2022.bioconductor.org/img/carousel/BioC2022.png"><img style="height:100px;" alt="tidybulk" src="https://github.com/Bioconductor/BiocStickers/blob/master/tidybulk/tidybulk.png?raw=true"></p>
 <div class="section level2">
-<h2 id="instructor-names-and-contact-information">Instructor names and contact information<a class="anchor" aria-label="anchor" href="#instructor-names-and-contact-information"></a>
+<h2 id="workshop-description">Workshop Description<a class="anchor" aria-label="anchor" href="#workshop-description"></a>
+</h2>
+<p>This tutorial will present how to perform analysis of single-cell RNA sequencing data following the tidy data paradigm. The tidy data paradigm provides a standard way to organise data values within a dataset, where each variable is a column, each observation is a row, and data is manipulated using an easy-to-understand vocabulary. Most importantly, the data structure remains consistent across manipulation and analysis functions.</p>
+<p>This can be achieved with the integration of packages present in the R CRAN and Bioconductor ecosystem, including <a href="https://stemangiola.github.io/tidySingleCellExperiment/" class="external-link">tidySingleCellExperiment</a> and <a href="https://www.tidyverse.org/" class="external-link">tidyverse</a>. These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data representation and analysis. For more information see the <a href="https://stemangiola.github.io/tidytranscriptomics/" class="external-link">tidy transcriptomics blog</a>.</p>
+<div class="section level3">
+<h3 id="pre-requisites">Pre-requisites<a class="anchor" aria-label="anchor" href="#pre-requisites"></a>
+</h3>
+<ul>
+<li>Basic familiarity with single-cell transcriptomic analyses</li>
+<li>Basic familiarity with tidyverse</li>
+</ul>
+</div>
+</div>
+<div class="section level2">
+<h2 id="workshop-goals">Workshop goals<a class="anchor" aria-label="anchor" href="#workshop-goals"></a>
 </h2>
 <ul>
-<li>Maria Doyle &lt;Maria.Doyle at petermac.org&gt;<br>
+<li>To approach single-cell data representation and analysis though a tidy data paradigm, integrating tidyverse with tidySingleCellExperiment.</li>
+<li>Compare SingleCellExperiment and tidy representation<br>
 </li>
-<li>Stefano Mangiola &lt;mangiola.s at wehi.edu.au&gt;</li>
+<li>Apply tidy functions to SingleCellExperiment objects<br>
+</li>
+<li>Reproduce a real-world case study that showcases the power of tidy single-cell methods</li>
 </ul>
+<div class="section level3">
+<h3 id="what-you-will-learn">What you will learn<a class="anchor" aria-label="anchor" href="#what-you-will-learn"></a>
+</h3>
+<ul>
+<li>Basic tidy operations possible with tidySingleCellExperiment</li>
+<li>The differences between SingleCellExperiment representation and tidy representation</li>
+<li>How to interface SingleCellExperiment with tidy manipulation and visualisation</li>
+<li>A real-world case study that will showcase the power of tidy single-cell methods compared with base/ad-hoc methods</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="what-you-will-not-learn">What you will not learn<a class="anchor" aria-label="anchor" href="#what-you-will-not-learn"></a>
+</h3>
+<ul>
+<li>The molecular technology of single-cell sequencing</li>
+<li>The fundamentals of single-cell data analysis</li>
+<li>The fundamentals of tidy data analysis</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="workshop-participation">Workshop Participation<a class="anchor" aria-label="anchor" href="#workshop-participation"></a>
+</h3>
+<p>The workshop format is a 1.5 hour session consisting of hands-on demos, exercises and Q&amp;A.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="syllabus">Syllabus<a class="anchor" aria-label="anchor" href="#syllabus"></a>
 </h2>
-<p>Material <a href="https://tidytranscriptomics-workshops.github.io/bioc2022_tidytranscriptomics/articles/tidytranscriptomics_case_study.html" class="external-link">web page</a>.</p>
-<p>More details on the workshop are below.</p>
+<p>Material <a href="https://tidytranscriptomics-workshops.github.io/bioc2022_tidytranscriptomics/articles/tidytranscriptomics_case_study.html" class="external-link">web page</a>. More details on the workshop are below.</p>
 </div>
 <div class="section level2">
 <h2 id="workshop-package-installation">Workshop package installation<a class="anchor" aria-label="anchor" href="#workshop-package-installation"></a>
@@ -126,64 +166,13 @@
 </div>
 </div>
 <div class="section level2">
-<h2 id="workshop-description">Workshop Description<a class="anchor" aria-label="anchor" href="#workshop-description"></a>
+<h2 id="instructor-names-and-contact-information">Instructor names and contact information<a class="anchor" aria-label="anchor" href="#instructor-names-and-contact-information"></a>
 </h2>
-<p>This tutorial will present how to perform analysis of single-cell RNA sequencing data following the tidy data paradigm. The tidy data paradigm provides a standard way to organise data values within a dataset, where each variable is a column, each observation is a row, and data is manipulated using an easy-to-understand vocabulary. Most importantly, the data structure remains consistent across manipulation and analysis functions.</p>
-<p>This can be achieved with the integration of packages present in the R CRAN and Bioconductor ecosystem, including <a href="https://stemangiola.github.io/tidySingleCellExperiment/" class="external-link">tidySingleCellExperiment</a> and <a href="https://www.tidyverse.org/" class="external-link">tidyverse</a>. These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data representation and analysis. For more information see the <a href="https://stemangiola.github.io/tidytranscriptomics/" class="external-link">tidy transcriptomics blog</a>.</p>
-<div class="section level3">
-<h3 id="pre-requisites">Pre-requisites<a class="anchor" aria-label="anchor" href="#pre-requisites"></a>
-</h3>
 <ul>
-<li>Basic familiarity with single-cell transcriptomic analyses</li>
-<li>Basic familiarity with tidyverse</li>
-</ul>
-</div>
-<div class="section level3">
-<h3 id="workshop-participation">Workshop Participation<a class="anchor" aria-label="anchor" href="#workshop-participation"></a>
-</h3>
-<p>The workshop format is a 1.5 hour session consisting of hands-on demos, exercises and Q&amp;A.</p>
-</div>
-</div>
-<div class="section level2">
-<h2 id="workshop-goals-and-objectives">Workshop goals and objectives<a class="anchor" aria-label="anchor" href="#workshop-goals-and-objectives"></a>
-</h2>
-<div class="section level3">
-<h3 id="learning-goals">Learning goals<a class="anchor" aria-label="anchor" href="#learning-goals"></a>
-</h3>
-<ul>
-<li>To approach single-cell data representation and analysis though a tidy data paradigm, integrating tidyverse with tidySingleCellExperiment.</li>
-</ul>
-</div>
-<div class="section level3">
-<h3 id="learning-objectives">Learning objectives<a class="anchor" aria-label="anchor" href="#learning-objectives"></a>
-</h3>
-<ul>
-<li>Compare SingleCellExperiment and tidy representation<br>
+<li>Maria Doyle &lt;Maria.Doyle at petermac.org&gt;<br>
 </li>
-<li>Apply tidy functions to SingleCellExperiment objects<br>
-</li>
-<li>Reproduce a real-world case study that showcases the power of tidy single-cell methods</li>
+<li>Stefano Mangiola &lt;mangiola.s at wehi.edu.au&gt;</li>
 </ul>
-</div>
-<div class="section level3">
-<h3 id="what-you-will-learn">What you will learn<a class="anchor" aria-label="anchor" href="#what-you-will-learn"></a>
-</h3>
-<ul>
-<li>Basic tidy operations possible with tidySingleCellExperiment</li>
-<li>The differences between SingleCellExperiment representation and tidy representation</li>
-<li>How to interface SingleCellExperiment with tidy manipulation and visualisation</li>
-<li>A real-world case study that will showcase the power of tidy single-cell methods compared with base/ad-hoc methods</li>
-</ul>
-</div>
-<div class="section level3">
-<h3 id="what-you-will-not-learn">What you will not learn<a class="anchor" aria-label="anchor" href="#what-you-will-not-learn"></a>
-</h3>
-<ul>
-<li>The molecular technology of single-cell sequencing</li>
-<li>The fundamentals of single-cell data analysis</li>
-<li>The fundamentals of tidy data analysis</li>
-</ul>
-</div>
 </div>
 </div>
 
