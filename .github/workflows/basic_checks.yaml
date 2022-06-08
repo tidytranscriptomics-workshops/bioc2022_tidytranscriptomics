@@ -16,6 +16,10 @@ jobs:
 
       - name: Query dependencies and update old packages
         run: |
+          # We'll install the specific versions from the install instructions and because of print bug
+          BiocManager::install("stemangiola/tidySingleCellExperiment@v1.7.2")
+          
+          # Then install the other dependencies in the usual way
           BiocManager::install(ask=FALSE)
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
         shell: Rscript {0}
