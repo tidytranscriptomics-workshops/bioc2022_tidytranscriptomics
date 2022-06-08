@@ -48,7 +48,7 @@ This workshop is not a step-by-step introduction in how to perform single-cell a
 
 Easiest way to run this material. We will use the Orchestra Cloud platform during the BioC2022 workshop.
 
--   Using the URL provided launch the workshop **There are several tidy transcriptomics workshops. Be sure to select the Bioc 2022 one**.
+-   Using the URL provided launch the workshop called "BioC2022: Tidy Transcriptomics For Single-Cell RNA Sequencing Analyses" **There are several tidy transcriptomics workshops. Be sure to select the BioC2022 one**.
 -   Open `tidytranscriptomics_case_study.Rmd` in `bioc2022_tidytranscriptomcs/vignettes` folder
 
 ### Local
