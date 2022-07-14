@@ -1,8 +1,8 @@
 ---
 title: "Tidy Transcriptomics For Single-Cell RNA Sequencing Analyses"
 author:
-  - Maria Doyle, Peter MacCallum Cancer Centre^[<maria.doyle at petermac.org>]
   - Stefano Mangiola, Walter and Eliza Hall Institute^[<mangiola.s at wehi.edu.au>]
+  - Maria Doyle, Peter MacCallum Cancer Centre^[<maria.doyle at petermac.org>]
 output: rmarkdown::html_vignette
 bibliography: "`r file.path(system.file(package='bioc2022tidytranscriptomics', 'vignettes'), 'tidytranscriptomics.bib')`"
 vignette: >
@@ -15,7 +15,13 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Goals
+## Instructors
+
+*Dr. Stefano Mangiola* is currently a Postdoctoral researcher in the laboratory of Prof. Tony Papenfuss at the Walter and Eliza Hall Institute in Melbourne, Australia. His background spans from biotechnology to bioinformatics and biostatistics. His research focuses on prostate and breast tumour microenvironment, the development of statistical models for the analysis of RNA sequencing data, and data analysis and visualisation interfaces.
+
+*Dr. Maria Doyle* is the Application and Training Specialist for Research Computing at the Peter MacCallum Cancer Centre in Melbourne, Australia. She has a PhD in Molecular Biology and currently works in bioinformatics and data science education and training. She is passionate about supporting researchers, reproducible research, open source and tidy data.
+
+## Workshop goals and objectives
 
 ### What you will learn
 
@@ -30,17 +36,17 @@ knitr::opts_chunk$set(echo = TRUE)
 -   The fundamentals of single-cell data analysis
 -   The fundamentals of tidy data analysis
 
-## Instructors
+This workshop will demonstrate a real-world example of using tidy transcriptomics packages, such as tidySingleCellExperiment and tidybulk, to perform a single cell analysis. This workshop is not a step-by-step introduction in how to perform single-cell analysis. For an overview of single-cell analysis steps performed in a tidy way please see the [ISMB2021 workshop](https://tidytranscriptomics-workshops.github.io/ismb2021_tidytranscriptomics/articles/tidytranscriptomics.html).
 
-*Dr. Stefano Mangiola* is currently a Postdoctoral researcher in the laboratory of Prof. Tony Papenfuss at the Walter and Eliza Hall Institute in Melbourne, Australia. His background spans from biotechnology to bioinformatics and biostatistics. His research focuses on prostate and breast tumour microenvironment, the development of statistical models for the analysis of RNA sequencing data, and data analysis and visualisation interfaces.
+## Slides
 
-*Dr. Maria Doyle* is the Application and Training Specialist for Research Computing at the Peter MacCallum Cancer Centre in Melbourne, Australia. She has a PhD in Molecular Biology and currently works in bioinformatics and data science education and training. She is passionate about supporting researchers, reproducible research, open source and tidy data.
+<iframe 
+    src="https://docs.google.com/gview?url=https://raw.githubusercontent.com/tidytranscriptomics-workshops/bioc2022_tidytranscriptomics/master/inst/bioc2022_tidytranscriptomics.pdf&embedded=true" 
+    scrolling="yes" 
+    style="width:100%; height:600px;" 
+    frameborder="0">
+</iframe>
 
-## Workshop goals and objectives
-
-This workshop will demonstrate a real-world example of using tidy transcriptomics packages, such as tidySingleCellExperiment, to perform a single cell analysis.
-
-This workshop is not a step-by-step introduction in how to perform single-cell analysis. For an overview of single-cell analysis steps performed in a tidy way please see the [ISMB2021 workshop](https://tidytranscriptomics-workshops.github.io/ismb2021_tidytranscriptomics/articles/tidytranscriptomics.html).
 
 ## Getting started
 
@@ -188,7 +194,6 @@ sce_obj |>
   join_features( c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"), shape = "wide"  )
 ```
 
-
 They were able to use tidySingleCellExperiment's `join_features` to select the counts for the genes in the signature, followed by tidyverse `mutate` to easily create a column containing the signature score.
 
 ```{r}
@@ -231,7 +236,6 @@ The cells could also be visualised using the popular and powerful ggplot package
 
 sce_obj |>
 
-
   join_features(
     features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B" ),  shape = "wide"
   ) |>
@@ -240,66 +244,14 @@ sce_obj |>
            scales::rescale(CD3D + TRDC + TRGC1+ TRGC2, to=c(0,1)) -
            scales::rescale(CD8A + CD8B, to=c(0,1))
   ) |>
-
-  #mutate(signature_score = case_when(signature_score>0 ~ signature_score)) |>
-	arrange(signature_score) |>
-  ggplot(aes(UMAP_1, UMAP_2, color = signature_score)) +
+    arrange(signature_score) |>
+  ggplot(aes(UMAP_1, UMAP_2, color = nCount_RNA)) +
   geom_point() +
 	scale_color_distiller(palette="Spectral") +
-  #scale_color_continuous_sequential(palette = "Blues", na.value = "grey") +
   theme_bw()
 ```
 
-The gamma delta T cells (the blue cluster on the left with high signature score) could be interactively selected from the plot using the tidygate package.
-
-```{r eval=FALSE}
-
-sce_obj |>
-
-
-  join_features(
-    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B" ), shape = "wide"
-  ) |>
-
-  mutate(signature_score =
-           scales::rescale(CD3D + TRDC + TRGC1+ TRGC2, to=c(0,1)) -
-           scales::rescale(CD8A + CD8B, to=c(0,1))
-  ) |>
-
-  mutate(gate = tidygate::gate_int(
-    UMAP_1, UMAP_2,
-    .size = 0.1,
-    .color =signature_score
-  ))
-
-```
-
-After the selection we can reload from file the gate drawn for reproducibility.
-
-```{r eval=FALSE}
-
-sce_obj |>
-
-  join_features(
-    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B" ), shape = "wide"
-
-  ) |>
-
-  mutate(signature_score =
-           scales::rescale(CD3D + TRDC + TRGC1+ TRGC2, to=c(0,1)) -
-           scales::rescale(CD8A + CD8B, to=c(0,1))
-  ) |>
-
-  mutate(gate = tidygate::gate_int(
-    UMAP_1, UMAP_2,
-    .size = 0.1,
-    .color =signature_score,
-    gate_list = bioc2022tidytranscriptomics::gate_sce_obj
-  ))
-
-```
-
-And the dataset could be filtered for just these cells using tidyverse `filter`.
+We can select the gamma delta T cells, the red cluster on the left with high signature score. We'll filter for cells with a signature score > 0.8.
 
 ```{r}
 
@@ -316,12 +268,10 @@ sce_obj |>
            scales::rescale(CD8A + CD8B, to=c(0,1))
   ) |>
 
-  mutate(gate = tidygate::gate_int(UMAP_1, UMAP_2, gate_list = bioc2022tidytranscriptomics::gate_sce_obj)) |>
-
-  filter(gate == 1)
+  filter(signature_score > 0.8)
 ```
 
-It was then possible to perform analyses on these gamma delta T cells by simply chaining further commands, such as below.
+It is then possible to perform analyses on these gamma delta T cells by simply chaining further commands, such as below.
 
 ```{r eval = FALSE}
 
@@ -338,9 +288,7 @@ sce_obj |>
            scales::rescale(CD8A + CD8B, to=c(0,1))
   ) |>
 
-  mutate( gate = tidygate::gate_int(UMAP_1, UMAP_2, gate_list = bioc2022tidytranscriptomics::gate_sce_obj) ) |>
-
-  filter(gate == 1) |>
+    filter(signature_score > 0.8) |>
 
   # Reanalyse
   NormalizeData(assay="RNA") |>
@@ -368,13 +316,10 @@ counts_negative =
 
 sce_obj$signature_score = counts_positive - counts_negative
 
-p = FeaturePlot(sce_obj, features = "signature_score")
-
-# This is not reproducible (on the contrary of tidygate)
-sce_obj$within_gate = colnames(sce_obj) %in% CellSelector(plot = p)
+FeaturePlot(sce_obj, features = "signature_score")
 
 sce_obj |>
-  subset(within_gate == TRUE) |>
+  subset(signature_score > 0.8) |>
 
   # Reanalyse
   NormalizeData(assay="RNA") |>
@@ -391,7 +336,7 @@ The example data used here only contains a few genes, for the sake of time and s
 
 ```{r eval = FALSE}
 single_cell_object |>
-  RunUMAP(dims = 1:30, n.components = 3L, spread = 0.5,min.dist  = 0.01, n.neighbors = 10L)
+  RunUMAP(dims = 1:30, n.components = 3L, spread = 0.5, min.dist  = 0.01, n.neighbors = 10L)
 ```
 
 We'll demonstrate creating a 3D plot using some data that has 3 UMAP dimensions.
@@ -412,3 +357,40 @@ pbmc |>
    add_markers(size = I(1))
 
 ```
+
+## Exercises
+
+1. What proportion of all cells are gamma-delta T cells? Use signature_score > 0.8 to identify gamma-delta T cells.
+
+2. There is a cluster of cells characterised by a low RNA output (nCount_RNA < 100). Identify the cell composition (curated_cell_type) of that cluster.
+
+# Pseudobulk analyses
+
+It is sometime useful to aggregate cell-wise transcript abundance into pseudobulk samples. It is possible to explore data and perform hypothesis testing with tools and data-source that we are more familiar with. For example, we can use edgeR in tidybulk to perform differential expression testing. For more details on pseudobulk analysis see [here](https://hbctraining.github.io/scRNA-seq/lessons/pseudobulk_DESeq2_scrnaseq.html).
+
+### Data exploration using pseudobulk samples
+
+To do this, we will use a helper function called aggregate_cells, available in this workshop package, to create a group for each sample.
+
+```{r warning=FALSE, message=FALSE}
+# Aggregate
+pbmc_bulk <-
+  bioc2022tidytranscriptomics::sce_obj %>%
+  bioc2022tidytranscriptomics::aggregate_cells(file)
+```
+
+```{r}
+pbmc_bulk %>%
+  # Tidybulk operations
+  tidybulk::identify_abundant() %>%
+  tidybulk::scale_abundance()
+```
+
+**Session Information**
+
+```{r}
+sessionInfo()
+```
+
+**References**
+
