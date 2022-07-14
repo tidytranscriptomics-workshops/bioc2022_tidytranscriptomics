@@ -2,6 +2,8 @@
 
 export(aggregate_cells)
 importFrom(magrittr,equals)
+importFrom(purrr,map)
+importFrom(purrr,map2)
 importFrom(purrr,when)
 importFrom(rlang,quo_name)
 importFrom(rlang,quo_squash)

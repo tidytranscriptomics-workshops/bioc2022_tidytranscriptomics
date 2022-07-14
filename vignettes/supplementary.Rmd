@@ -13,12 +13,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r message = FALSE}
-library(SingleCellExperiment)
 library(ggplot2)
 library(plotly)
 library(dplyr)
 library(colorspace)
 library(dittoSeq)
+library(tidySingleCellExperiment)
 library(tidygate)
 ```
 

@@ -4,7 +4,7 @@
 #'
 #' @importFrom rlang quo_name
 #' @importFrom rlang quo_squash
-#' @importFrom purrr when
+#' @importFrom purrr when map map2
 #' @importFrom magrittr equals
 #'
 #' @param v A array of quosures (e.g. c(col_a, col_b))
