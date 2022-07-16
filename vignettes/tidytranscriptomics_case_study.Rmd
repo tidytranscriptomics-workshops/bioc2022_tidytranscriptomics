@@ -375,17 +375,59 @@ pseudo_bulk =
 			file, 
 			transcript, 
 			.abundance = abundance_counts)
-	))
+	)) |> 
 	
+	# Filter cell types with too few samples
+	filter(map_int(data, ~ pivot_sample(.x) |> nrow()) > 2)
+```
+
+```{r}
+# Differential transcription abundance 
 pseudo_bulk = 
 	pseudo_bulk |>
-	mutate(analysis = map(
+	mutate(data = map(
 		data,
 		~ .x |> 
 			identify_abundant(factor_of_interest = batch) |> 
 			scale_abundance() |> 
 			test_differential_abundance(~condition)
 	))
+
+pseudo_bulk |> 
+	slice(1) |> 
+	pull(data)
+```
+
+```{r}
+pseudo_bulk = 
+	pseudo_bulk |> 
+	
+	# Filter out significant
+	mutate(data = map(data, ~ filter(.x, FDR < 0.5))) |> 
+	filter(map_int(data, ~ .x |> nrow()) > 0) |> 
+	
+	# Plot
+	mutate(plot = map2(
+		data, curated_cell_type,
+		~ .x |> 
+			ggplot(aes(condition, abundance_counts_scaled + 1)) +
+			geom_boxplot() +
+			geom_jitter() +
+			scale_y_log10() +
+			facet_wrap(~ .feature) +
+			ggtitle(.y)
+	))
+
+pseudo_bulk  %>% slice(1) |> pull(plot)
+```
+
+
+```{r}
+library(patchwork)
+pseudo_bulk |> 
+	pull(plot) |> 
+	wrap_plots() +
+	theme_bw()
 ```
 
 
