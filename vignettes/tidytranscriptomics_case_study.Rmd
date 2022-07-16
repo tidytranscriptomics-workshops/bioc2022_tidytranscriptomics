@@ -230,7 +230,7 @@ sce_obj |>
 
 ```
 
-The cells could also be visualised using the popular and powerful ggplot package, enabling the researcher to use ggplot functions they were familiar with, and to customise the plot with great flexibility.
+The cells could also be visualised using the popular and powerful `ggplot2` package, enabling the researcher to use ggplot functions they were familiar with, and to customise the plot with great flexibility.
 
 ```{r}
 
@@ -245,17 +245,18 @@ sce_obj |>
            scales::rescale(CD8A + CD8B, to=c(0,1))
   ) |>
     arrange(signature_score) |>
-  ggplot(aes(UMAP_1, UMAP_2, color = nCount_RNA)) +
+  ggplot(aes(UMAP_1, UMAP_2, color = signature_score)) +
   geom_point() +
 	scale_color_distiller(palette="Spectral") +
   theme_bw()
 ```
 
-We can select the gamma delta T cells, the red cluster on the left with high signature score. We'll filter for cells with a signature score > 0.8.
+For exploratory analyses, we can select the gamma delta T cells, the red cluster on the left with high signature score. We'll filter for cells with a signature score > 0.8.
 
 ```{r}
 
-sce_obj |>
+sce_obj_gamma_delta = 
+	sce_obj |>
 
 
   join_features(
@@ -269,35 +270,6 @@ sce_obj |>
   ) |>
 
   filter(signature_score > 0.8)
-```
-
-It is then possible to perform analyses on these gamma delta T cells by simply chaining further commands, such as below.
-
-```{r eval = FALSE}
-
-sce_obj |>
-
-
-  join_features(
-    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),   shape = "wide"
-
-  ) |>
-
-  mutate(signature_score =
-           scales::rescale(CD3D + TRDC + TRGC1+ TRGC2, to=c(0,1)) -
-           scales::rescale(CD8A + CD8B, to=c(0,1))
-  ) |>
-
-    filter(signature_score > 0.8) |>
-
-  # Reanalyse
-  NormalizeData(assay="RNA") |>
-  FindVariableFeatures( nfeatures = 100, assay="RNA") |>
-  SplitObject(split.by = "file") |>
-  RunFastMNN(assay="RNA") |>
-  RunUMAP(reduction = "mnn", dims = 1:20) |>
-  FindNeighbors( dims = 1:20, reduction = "mnn") |>
-  FindClusters( resolution = 0.3)
 ```
 
 For comparison, we show the alternative using base R and SingleCellExperiment
@@ -319,7 +291,14 @@ sce_obj$signature_score = counts_positive - counts_negative
 FeaturePlot(sce_obj, features = "signature_score")
 
 sce_obj |>
-  subset(signature_score > 0.8) |>
+  subset(signature_score > 0.8) 
+```
+
+It is then possible to perform analyses on these gamma delta T cells by simply chaining further commands, such as below.
+
+```{r eval = FALSE}
+
+sce_obj_gamma_delta |>
 
   # Reanalyse
   NormalizeData(assay="RNA") |>
@@ -330,6 +309,8 @@ sce_obj |>
   FindNeighbors( dims = 1:20, reduction = "mnn") |>
   FindClusters( resolution = 0.3)
 ```
+
+
 
 It was also possible to visualise the cells as a 3D plot using plotly.
 The example data used here only contains a few genes, for the sake of time and size in this demonstration, but below is how you could generate the 3 dimensions needed for 3D plot with a full dataset.
@@ -373,18 +354,40 @@ It is sometime useful to aggregate cell-wise transcript abundance into pseudobul
 To do this, we will use a helper function called aggregate_cells, available in this workshop package, to create a group for each sample.
 
 ```{r warning=FALSE, message=FALSE}
-# Aggregate
-pbmc_bulk <-
-  bioc2022tidytranscriptomics::sce_obj %>%
-  bioc2022tidytranscriptomics::aggregate_cells(file)
+data("sce_obj")
+library(tidysc)
+library(glue)
+library(tidyr)
+library(tidybulk)
+library(tidySummarizedExperiment)
+library(purrr)
+
+pseudo_bulk =
+	
+  sce_obj |> 
+  tidysc::aggregate_cells(c(file, curated_cell_type), assays = "counts") |> 
+	
+	nest(data = -curated_cell_type) |> 
+	mutate(data = map(
+		data,
+		~  as_SummarizedExperiment(
+			.x, 
+			file, 
+			transcript, 
+			.abundance = abundance_counts)
+	))
+	
+pseudo_bulk = 
+	pseudo_bulk |>
+	mutate(analysis = map(
+		data,
+		~ .x |> 
+			identify_abundant(factor_of_interest = batch) |> 
+			scale_abundance() |> 
+			test_differential_abundance(~condition)
+	))
 ```
 
-```{r}
-pbmc_bulk %>%
-  # Tidybulk operations
-  tidybulk::identify_abundant() %>%
-  tidybulk::scale_abundance()
-```
 
 **Session Information**
 
