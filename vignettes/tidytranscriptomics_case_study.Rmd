@@ -70,6 +70,7 @@ library(plotly)
 library(dplyr)
 library(colorspace)
 library(dittoSeq)
+data(theme_multipanel)
 ```
 
 
@@ -248,7 +249,7 @@ sce_obj |>
   ggplot(aes(UMAP_1, UMAP_2, color = signature_score)) +
   geom_point() +
 	scale_color_distiller(palette="Spectral") +
-  theme_bw()
+  bioc2022tidytranscriptomics::theme_multipanel
 ```
 
 For exploratory analyses, we can select the gamma delta T cells, the red cluster on the left with high signature score. We'll filter for cells with a signature score > 0.8.
@@ -353,7 +354,7 @@ It is sometime useful to aggregate cell-wise transcript abundance into pseudobul
 
 To do this, we will use a helper function called aggregate_cells, available in this workshop package, to create a group for each sample.
 
-```{r warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE, echo=FALSE}
 data("sce_obj")
 library(tidysc)
 library(glue)
@@ -411,7 +412,7 @@ pseudo_bulk =
 		data, curated_cell_type,
 		~ .x |> 
 			ggplot(aes(condition, abundance_counts_scaled + 1)) +
-			geom_boxplot() +
+			geom_boxplot(aes(fill = condition)) +
 			geom_jitter() +
 			scale_y_log10() +
 			facet_wrap(~ .feature) +
@@ -422,12 +423,12 @@ pseudo_bulk  %>% slice(1) |> pull(plot)
 ```
 
 
-```{r}
+```{r, fig.height = 8}
 library(patchwork)
 pseudo_bulk |> 
 	pull(plot) |> 
-	wrap_plots() +
-	theme_bw()
+	wrap_plots() &
+	bioc2022tidytranscriptomics::theme_multipanel
 ```
 
 
