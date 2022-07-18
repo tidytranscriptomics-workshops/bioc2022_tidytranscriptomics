@@ -356,7 +356,6 @@ To do this, we will use a helper function called aggregate_cells, available in t
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE}
 data("sce_obj")
-library(tidysc)
 library(glue)
 library(tidyr)
 library(tidybulk)
