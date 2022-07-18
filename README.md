@@ -20,7 +20,7 @@ This can be achieved with the integration of packages present in the R CRAN and 
 * Basic familiarity with single-cell transcriptomic analyses
 * Basic familiarity with tidyverse
 
-## Workshop goals
+## Workshop goals and objectives
 
 * To approach single-cell data representation and analysis though a tidy data paradigm, integrating tidyverse with tidySingleCellExperiment.
 * Compare SingleCellExperiment and tidy representation  

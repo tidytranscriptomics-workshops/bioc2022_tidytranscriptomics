@@ -74,7 +74,7 @@ sce_obj |>
 
 And the dataset could be filtered for just these cells using tidyverse `filter`.
 
-```{r}
+```{r eval=FALSE}
 
 sce_obj |>
 
