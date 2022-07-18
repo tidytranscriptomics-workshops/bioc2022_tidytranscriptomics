@@ -1,5 +1,6 @@
 library(Seurat)
 library(tidyseurat)
+library(tidySingleCellExperiment)
 
 seurat_obj <- readRDS("/stornext/Bioinf/data/bioinf-data/Papenfuss_lab/projects/mangiola.s/PostDoc/oligo_breast/expanded_analyses_with_control/cancer_only_analyses/lymphoid/cancer_lymphoid_cell_type_curated.rds")
 
@@ -20,7 +21,13 @@ seurat_obj = seurat_obj %>% mutate(
 DefaultAssay(seurat_obj) = "SCT"
 seurat_obj[["integrated"]] = NULL
 
-sce_obj = seurat_obj %>% as.SingleCellExperiment()
+sce_obj = seurat_obj %>%
+	as.SingleCellExperiment() |>
+	
+	# Add factor of interest
+	nest(data = -file) |> 
+	mutate(condition = sample(c("treated", "untreated"), n(), replace = TRUE)) |>
+	unnest(data)
 
 job::job({
 	save(sce_obj , file="data/sce_obj.rda", compress = "xz")
