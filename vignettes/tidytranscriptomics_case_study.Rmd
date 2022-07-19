@@ -349,7 +349,7 @@ It is sometime useful to aggregate cell-wise transcript abundance into pseudobul
 To do this, we will use a helper function called aggregate_cells, available in this workshop package, to combine the single cells into a group for each sample.
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE}
-library(tidysc)
+data("sce_obj")
 library(glue)
 library(tidyr)
 library(tidybulk)

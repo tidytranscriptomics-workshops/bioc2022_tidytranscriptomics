@@ -83,40 +83,39 @@ subset = 		function(.data,	 .column)	{
 }
 
 #' @export
-aggregate_cells = function(.data, .sample) {
-  
-  .sample = enquo(.sample)
-  
-  .data %>%
-    
-    tidySingleCellExperiment::nest(data = -!!.sample) %>%
-    mutate(data = map(data, ~ 
-                        
-                        # loop over assays
-                        map2(
-                          .x %>% assays %>% as.list() ,
-                          .x %>% assays %>% names(),
-                          
-                          # Get counts
-                          ~ .x %>%
-                            Matrix::rowSums(na.rm = T) %>%
-                            tibble::enframe(
-                              name  = "transcript",
-                              value = sprintf("abundance_%s", .y)
-                            )
-                        ) %>%
-                        Reduce(function(...) full_join(..., by=c("transcript")), .)
-                      
-    )) %>%
-    left_join(.data %>% tidySingleCellExperiment::as_tibble() %>% subset(!!.sample)) %>%
-    tidySingleCellExperiment::unnest(data) %>%
-    
-    drop_class("tidySingleCellExperiment_nested") %>%
-    
-    tidybulk::as_SummarizedExperiment(
-      .sample = !!.sample,
-      .transcript = transcript,
-      .abundance = !!as.symbol(sprintf("abundance_%s", names(assays(.data))[1]))
-    ) 
-  
+aggregate_cells = function(.data, .sample = NULL, slot = "data", assays = NULL, aggregation_function = Matrix::rowSums) {
+	
+	.sample = enquo(.sample)
+	
+	# Subset only wanted assays
+	if(!is.null(assays)){
+		.data@assays@data = .data@assays@data[assays]
+	}
+	
+	.data %>%
+		
+		tidySingleCellExperiment::nest(data = -!!.sample) %>%
+		mutate(.aggregated_cells = map_int(data, ~ ncol(.x))) %>% 
+		mutate(data = map(data, ~ 
+												# loop over assays
+												map2(
+													as.list(assays(.x)), names(.x@assays),
+													
+													# Get counts
+													~  .x %>%
+														aggregation_function(na.rm = T) %>%
+														tibble::enframe(
+															name  = "transcript",
+															value = sprintf("abundance_%s", .y)
+														) %>%
+														mutate(transcript = as.character(transcript)) 
+												) %>%
+												Reduce(function(...) full_join(..., by=c("transcript")), .)
+											
+		)) %>%
+		left_join(.data %>% tidySingleCellExperiment::as_tibble() %>% subset(!!.sample), by = quo_names(.sample)) %>%
+		tidySingleCellExperiment::unnest(data) %>%
+		
+		drop_class("tidySingleCellExperiment_nested")
+	
 }
