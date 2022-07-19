@@ -346,19 +346,27 @@ It is sometime useful to aggregate cell-wise transcript abundance into pseudobul
 
 ### Data exploration using pseudobulk samples
 
-To do this, we will use a helper function called aggregate_cells, available in this workshop package, to combine the single cells into a group for each sample.
+To do this, we will use a helper function called `aggregate_cells`, available in this workshop package, to combine the single cells into groups for each cell type for each sample.
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE}
-data("sce_obj")
 library(glue)
 library(tidyr)
 library(tidybulk)
 library(tidySummarizedExperiment)
 library(purrr)
+library(patchwork)
+```
 
+TODO: Stefano to 
+    simplify below
+    change `file` to `sample`
+    change `curated_cell_type` to `cell_type`
+    change to real categories instead of dummy
+
+```{r}
 pseudo_bulk <-
   sce_obj |>
-  tidysc::aggregate_cells(c(file, curated_cell_type), assays = "counts") |>
+  bioc2022tidytranscriptomics::aggregate_cells(c(file, curated_cell_type), assays = "counts") |>
     
   nest(data = -curated_cell_type) |>
     
@@ -376,6 +384,8 @@ pseudo_bulk <-
   filter(map_int(data, ~ pivot_sample(.x) |> nrow()) > 2)
 ```
 
+We can then identify differentially expressed genes for each cell type for our condition of interest, progressive versus stable metastatic breast cancer.
+
 ```{r}
 # Differential transcription abundance
 pseudo_bulk <-
@@ -388,12 +398,27 @@ pseudo_bulk <-
       test_differential_abundance(~condition)
   ))
 
+```
+
+The output is a nested table containing a SummarizedExperiment for each cell type.
+
+```{r}
+pseudo_bulk
+```
+
+We can use tidyverse `slice` to choose a row (cell_type) and `pull` to extract the values from a column. If we pull the data column we can view the SummarizedExperiment object. 
+
+```{r}
 pseudo_bulk |>
   slice(1) |>
   pull(data)
 ```
 
-```{r}
+TODO: Stefano to see if can 
+    use more realistic condition and filter (FDR)
+    remove the filter map_int step
+
+```{r message = FALSE}
 pseudo_bulk <-
     
   pseudo_bulk |>
@@ -413,15 +438,25 @@ pseudo_bulk <-
       facet_wrap(~.feature) +
       ggtitle(.y)
   ))
+```
 
+The output is a nested table with a column containing a plot for each cell type.
+
+```{r}
+pseudo_bulk
+```
+
+We'll use slice and pull again to have a look at one of the plots.
+
+```{r}
 pseudo_bulk |>
   slice(1) |>
   pull(plot)
 ```
 
+We can extract all plots and plot with `wrap_plots` from the patchwork package. 
 
 ```{r, fig.height = 8}
-library(patchwork)
 pseudo_bulk |>
   pull(plot) |>
   wrap_plots() &
