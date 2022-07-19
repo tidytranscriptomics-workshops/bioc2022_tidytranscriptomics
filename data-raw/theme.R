@@ -28,7 +28,7 @@ theme_multipanel =
 		legend.text = element_text(size=6),
 		
 		# Avoid text clipping for facets. Currently not merged remotes::install_github("tidyverse/ggplot2#4223")
-		strip.clip = "off",
+		#strip.clip = "off",
 		
 		# Title
 		plot.title = element_text(size=7),
