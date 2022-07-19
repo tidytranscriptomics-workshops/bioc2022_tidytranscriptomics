@@ -20,6 +20,8 @@ Depends:
     R (>= 4.0.0)
 Imports:
     tidySingleCellExperiment,
+    tidySummarizedExperiment,
+    tidybulk,
     tidygate,
     scater,
     stats,
@@ -45,8 +47,7 @@ Imports:
     R.utils,
     dittoSeq,
     glue,
-    patchwork,
-    tidybulk
+    patchwork
 Suggests:
     knitr,
     rmarkdown,
