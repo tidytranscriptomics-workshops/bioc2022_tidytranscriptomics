@@ -43,7 +43,10 @@ Imports:
     rlang,
     magrittr,
     R.utils,
-    dittoSeq
+    dittoSeq,
+    glue,
+    patchwork,
+    tidybulk
 Suggests:
     knitr,
     rmarkdown,
