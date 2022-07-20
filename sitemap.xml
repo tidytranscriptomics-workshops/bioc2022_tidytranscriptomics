@@ -13,6 +13,12 @@
     <loc>https://tidytranscriptomics-workshops.github.io/iscb2021_tidytranscriptomics/articles/index.html</loc>
   </url>
   <url>
+    <loc>https://tidytranscriptomics-workshops.github.io/iscb2021_tidytranscriptomics/articles/solutions.html</loc>
+  </url>
+  <url>
+    <loc>https://tidytranscriptomics-workshops.github.io/iscb2021_tidytranscriptomics/articles/supplementary.html</loc>
+  </url>
+  <url>
     <loc>https://tidytranscriptomics-workshops.github.io/iscb2021_tidytranscriptomics/articles/tidytranscriptomics_case_study.html</loc>
   </url>
   <url>
@@ -22,15 +28,24 @@
     <loc>https://tidytranscriptomics-workshops.github.io/iscb2021_tidytranscriptomics/index.html</loc>
   </url>
   <url>
+    <loc>https://tidytranscriptomics-workshops.github.io/iscb2021_tidytranscriptomics/reference/drop_class.html</loc>
+  </url>
+  <url>
     <loc>https://tidytranscriptomics-workshops.github.io/iscb2021_tidytranscriptomics/reference/gate_sce_obj.html</loc>
   </url>
   <url>
     <loc>https://tidytranscriptomics-workshops.github.io/iscb2021_tidytranscriptomics/reference/index.html</loc>
   </url>
   <url>
+    <loc>https://tidytranscriptomics-workshops.github.io/iscb2021_tidytranscriptomics/reference/quo_names.html</loc>
+  </url>
+  <url>
     <loc>https://tidytranscriptomics-workshops.github.io/iscb2021_tidytranscriptomics/reference/sce_obj.html</loc>
   </url>
   <url>
     <loc>https://tidytranscriptomics-workshops.github.io/iscb2021_tidytranscriptomics/reference/sce_obj_UMAP3.html</loc>
+  </url>
+  <url>
+    <loc>https://tidytranscriptomics-workshops.github.io/iscb2021_tidytranscriptomics/reference/theme_multipanel.html</loc>
   </url>
 </urlset>
