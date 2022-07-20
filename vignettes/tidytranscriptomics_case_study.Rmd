@@ -381,7 +381,7 @@ pseudo_bulk |>
 
 
 pseudo_bulk |>
-  nest(data = -cell_type)
+  nest(data = -cell_type) |> 
   slice(1) |>
   pull(data)
 ```
@@ -398,20 +398,15 @@ pseudo_bulk <-
   mutate(data = map(
     data,
     ~ .x |>
-      identify_abundant(factor_of_interest = condition) |>
+      identify_abundant(factor_of_interest = treatment) |>
       scale_abundance() |>
-      test_differential_abundance(~condition)
+      test_differential_abundance(~treatment)
   ))
 
 ```
 
 
 
-
-
-TODO: Stefano to see if can 
-    use more realistic condition and filter (FDR)
-    remove the filter map_int step
 
 ```{r message = FALSE}
 pseudo_bulk <-
@@ -428,15 +423,14 @@ pseudo_bulk <-
   mutate(plot = map2(
     data, cell_type,
     ~ .x |>
-      ggplot(aes(condition, counts_scaled + 1)) +
-      geom_boxplot(aes(fill = condition)) +
+      ggplot(aes(treatment, counts_scaled + 1)) +
+      geom_boxplot(aes(fill = treatment)) +
       geom_jitter() +
       scale_y_log10() +
       facet_wrap(~.feature) +
       ggtitle(.y)
   ))
 
-pseudo_bulk
 ```
 
 The output is a nested table with a column containing a plot for each cell type.
