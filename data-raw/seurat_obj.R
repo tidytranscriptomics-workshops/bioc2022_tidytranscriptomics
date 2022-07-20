@@ -29,6 +29,19 @@ sce_obj = seurat_obj %>%
 	mutate(condition = sample(c("treated", "untreated"), n(), replace = TRUE)) |>
 	unnest(data)
 
+# Parse
+sce_obj = 
+	sce_obj |> 
+	select(-condition) |>  
+	left_join(readRDS("~/metadata_oligo.rds")) |> 
+	rename(treatment = type) |> 
+	mutate(treatment = if_else(treatment=="OMBC", "treated", "untreated")) |> select(-file) |> 
+	mutate(sample = glue("S{as.integer(as.factor(sample))}")) |> 
+	rename(cell_type = curated_cell_type) |> 
+
+	# filtering because of to few samples per cell types
+	filter(cell_type !="CD8+_Tem")
+
 job::job({
 	save(sce_obj , file="data/sce_obj.rda", compress = "xz")
 })

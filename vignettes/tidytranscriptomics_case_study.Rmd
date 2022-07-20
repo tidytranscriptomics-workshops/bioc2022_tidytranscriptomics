@@ -328,7 +328,7 @@ pbmc |>
     x = ~`UMAP_1`,
     y = ~`UMAP_2`,
     z = ~`UMAP_3`,
-    color = ~curated_cell_type,
+    color = ~cell_type,
     colors = dittoSeq::dittoColors()
   ) %>%
   add_markers(size = I(1))
@@ -338,7 +338,7 @@ pbmc |>
 
 1. What proportion of all cells are gamma-delta T cells? Use signature_score > 0.8 to identify gamma-delta T cells.
 
-2. There is a cluster of cells characterised by a low RNA output (nCount_RNA < 100). Identify the cell composition (curated_cell_type) of that cluster.
+2. There is a cluster of cells characterised by a low RNA output (nCount_RNA < 100). Identify the cell composition (cell_type) of that cluster.
 
 # Pseudobulk analyses
 
@@ -360,28 +360,30 @@ library(patchwork)
 TODO: Stefano to 
     simplify below
     change `file` to `sample`
-    change `curated_cell_type` to `cell_type`
+    change `cell_type` to `cell_type`
     change to real categories instead of dummy
 
 ```{r}
 pseudo_bulk <-
   sce_obj |>
-  bioc2022tidytranscriptomics::aggregate_cells(c(file, curated_cell_type), assays = "counts") |>
-    
-  nest(data = -curated_cell_type) |>
-    
-  mutate(data = map(
-    data,
-    ~ as_SummarizedExperiment(
-      .x,
-      file,
-      transcript,
-      .abundance = abundance_counts
-    )
-  )) |>
-    
-  # Filter cell types with too few samples
-  filter(map_int(data, ~ pivot_sample(.x) |> nrow()) > 2)
+  bioc2022tidytranscriptomics::aggregate_cells(c(sample, cell_type), assays = "counts") 
+
+pseudo_bulk
+```
+
+With `tidySummarizedExperiment` is easy to stratify our dataset for iterative self-contained analyses.
+
+To explore the grouping, we can use tidyverse `slice` to choose a row (cell_type) and `pull` to extract the values from a column. If we pull the data column we can view the SummarizedExperiment object. 
+
+```{r}
+pseudo_bulk |>
+  nest(data = -cell_type)
+
+
+pseudo_bulk |>
+  nest(data = -cell_type)
+  slice(1) |>
+  pull(data)
 ```
 
 We can then identify differentially expressed genes for each cell type for our condition of interest, progressive versus stable metastatic breast cancer.
@@ -390,29 +392,22 @@ We can then identify differentially expressed genes for each cell type for our c
 # Differential transcription abundance
 pseudo_bulk <-
   pseudo_bulk |>
+
+  nest(data = -cell_type) |> 
+  
   mutate(data = map(
     data,
     ~ .x |>
-      identify_abundant(factor_of_interest = batch) |>
+      identify_abundant(factor_of_interest = condition) |>
       scale_abundance() |>
       test_differential_abundance(~condition)
   ))
 
 ```
 
-The output is a nested table containing a SummarizedExperiment for each cell type.
 
-```{r}
-pseudo_bulk
-```
 
-We can use tidyverse `slice` to choose a row (cell_type) and `pull` to extract the values from a column. If we pull the data column we can view the SummarizedExperiment object. 
 
-```{r}
-pseudo_bulk |>
-  slice(1) |>
-  pull(data)
-```
 
 TODO: Stefano to see if can 
     use more realistic condition and filter (FDR)
@@ -421,23 +416,27 @@ TODO: Stefano to see if can
 ```{r message = FALSE}
 pseudo_bulk <-
     
-  pseudo_bulk |>
+	pseudo_bulk |>
     
   # Filter out significant
   mutate(data = map(data, ~ filter(.x, FDR < 0.5))) |>
-  filter(map_int(data, ~ .x |> nrow()) > 0) |>
+	
+	# Filter cell types with no differential abundant gene-transcripts
+  filter(map_int(data, ~ nrow(.x)) > 0) |>
     
   # Plot
   mutate(plot = map2(
-    data, curated_cell_type,
+    data, cell_type,
     ~ .x |>
-      ggplot(aes(condition, abundance_counts_scaled + 1)) +
+      ggplot(aes(condition, counts_scaled + 1)) +
       geom_boxplot(aes(fill = condition)) +
       geom_jitter() +
       scale_y_log10() +
       facet_wrap(~.feature) +
       ggtitle(.y)
   ))
+
+pseudo_bulk
 ```
 
 The output is a nested table with a column containing a plot for each cell type.
