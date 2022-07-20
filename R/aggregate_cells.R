@@ -105,17 +105,19 @@ aggregate_cells = function(.data, .sample = NULL, slot = "data", assays = NULL, 
 													~  .x %>%
 														aggregation_function(na.rm = T) %>%
 														tibble::enframe(
-															name  = "transcript",
-															value = sprintf("abundance_%s", .y)
+															name  = "feature",
+															value = sprintf("%s", .y)
 														) %>%
-														mutate(transcript = as.character(transcript)) 
+														mutate(feature = as.character(feature)) 
 												) %>%
-												Reduce(function(...) full_join(..., by=c("transcript")), .)
+												Reduce(function(...) full_join(..., by=c("feature")), .)
 											
 		)) %>%
 		left_join(.data %>% tidySingleCellExperiment::as_tibble() %>% subset(!!.sample), by = quo_names(.sample)) %>%
 		tidySingleCellExperiment::unnest(data) %>%
 		
-		drop_class("tidySingleCellExperiment_nested")
+		drop_class("tidySingleCellExperiment_nested") |> 
+		
+		as_SummarizedExperiment(.sample = !!.sample, .transcript = feature, .abundance = !!as.symbol(names(.data@assays)))
 	
 }

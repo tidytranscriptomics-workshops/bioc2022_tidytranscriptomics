@@ -1,3 +1,5 @@
+library(tidySingleCellExperiment)
+
 seurat_obj_UMAP3 = 
   seurat_obj_for_BioCAsia2021 %>% 
   RunUMAP(dims = 1:30, n.components = 3L, spread    = 0.5,min.dist  = 0.01, n.neighbors = 10L)
@@ -6,8 +8,11 @@ seurat_obj_UMAP3[["RNA"]] = NULL
 seurat_obj_UMAP3[["SCT"]] = NULL
 seurat_obj_UMAP3 = seurat_obj_UMAP3[1,] 
 
-seurat_obj_UMAP3 %>% saveRDS("~/PostDoc/workshops/bioc2022_tidytranscriptomics/dev/seurat_obj_UMAP3.rds", compress = "xz")
-save(seurat_obj_UMAP3, file="data/seurat_obj_UMAP3.rda", compress = "xz")
+
+sce_obj_UMAP3 = sce_obj_UMAP3 |> rename(cell_type = curated_cell_type)
+
+#seurat_obj_UMAP3 %>% saveRDS("~/PostDoc/workshops/bioc2022_tidytranscriptomics/dev/seurat_obj_UMAP3.rds", compress = "xz")
+save(sce_obj_UMAP3, file="data/sce_obj_UMAP3.rda", compress = "xz")
 
 
 seurat_obj_UMAP3 |>
