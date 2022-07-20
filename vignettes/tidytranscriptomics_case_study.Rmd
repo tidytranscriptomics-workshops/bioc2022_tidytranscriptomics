@@ -68,7 +68,11 @@ We will use the Orchestra Cloud platform during the BioC2022 workshop and this m
 
 Alternatively, you can view the material at the workshop webpage [here](https://tidytranscriptomics-workshops.github.io/bioc2022_tidytranscriptomics/articles/tidytranscriptomics_case_study.html).
 
+
+## Introduction to tidySingleCellExperiment
+
 ```{r message = FALSE}
+# Load packages
 library(SingleCellExperiment)
 library(ggplot2)
 library(plotly)
@@ -77,12 +81,10 @@ library(colorspace)
 library(dittoSeq)
 ```
 
-
-## Introduction to tidySingleCellExperiment
-
 SingleCellExperiment is a very popular analysis toolkit for single cell RNA sequencing data [@butler2018integrating; @stuart2019comprehensive].
 
 Here we load single-cell data in SingleCellExperiment object format. This data is peripheral blood mononuclear cells (PBMCs) from metastatic breast cancer patients.
+
 
 ```{r}
 # load single cell RNA sequencing data
@@ -357,12 +359,6 @@ library(purrr)
 library(patchwork)
 ```
 
-TODO: Stefano to 
-    simplify below
-    change `file` to `sample`
-    change `cell_type` to `cell_type`
-    change to real categories instead of dummy
-
 ```{r}
 pseudo_bulk <-
   sce_obj |>
@@ -388,7 +384,7 @@ pseudo_bulk |>
 
 We can then identify differentially expressed genes for each cell type for our condition of interest, progressive versus stable metastatic breast cancer.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 # Differential transcription abundance
 pseudo_bulk <-
   pseudo_bulk |>
@@ -404,8 +400,6 @@ pseudo_bulk <-
   ))
 
 ```
-
-
 
 
 ```{r message = FALSE}
