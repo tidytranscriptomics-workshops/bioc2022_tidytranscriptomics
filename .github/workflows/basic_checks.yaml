@@ -1,7 +1,7 @@
 on: [push]
 
 env:
-  cache-version: v2
+  cache-version: v3
   repo-name: tidytranscriptomics-workshops/bioc2022_tidytranscriptomics
 
 jobs:
@@ -16,8 +16,10 @@ jobs:
 
       - name: Query dependencies and update old packages
         run: |
-          # We'll install the specific versions from the install instructions and because of print bug
+          # We'll install the specific versions needed
           BiocManager::install("stemangiola/tidySingleCellExperiment@v1.7.2")
+          BiocManager::install("stemangiola/tidySummarizedExperiment@v1.7.3")
+          BiocManager::install("stemangiola/tidybulk@v1.9.2")
           
           # Then install the other dependencies in the usual way
           BiocManager::install(ask=FALSE)
@@ -53,7 +55,7 @@ jobs:
       - name: Check
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
-        run: rcmdcheck::rcmdcheck(args = c("--no-manual"), error_on = "warning", check_dir = "check")
+        run: rcmdcheck::rcmdcheck(args = c("--no-manual"), error_on = "error", check_dir = "check")
         shell: Rscript {0}
 
       - name: Build pkgdown

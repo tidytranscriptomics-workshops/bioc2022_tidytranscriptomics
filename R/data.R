@@ -25,3 +25,12 @@
 #' @format  A sce object.
 #' @usage data(sce_obj_UMAP3)
 "sce_obj_UMAP3"
+
+#' theme_multipanel
+#'
+#' A pretty theme
+#'
+#'
+#' @format  A theme ggplot2 object.
+#' @usage data(theme_multipanel)
+"theme_multipanel"

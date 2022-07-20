@@ -20,7 +20,7 @@ This can be achieved with the integration of packages present in the R CRAN and 
 * Basic familiarity with single-cell transcriptomic analyses
 * Basic familiarity with tidyverse
 
-## Workshop goals
+## Workshop goals and objectives
 
 * To approach single-cell data representation and analysis though a tidy data paradigm, integrating tidyverse with tidySingleCellExperiment.
 * Compare SingleCellExperiment and tidy representation  
@@ -78,7 +78,7 @@ Alternatively, you could install the workshop using the commands below in R `4.2
 Sys.setenv("R_REMOTES_NO_ERRORS_FROM_WARNINGS" = "true")
 
 # Install same versions used in the workshop
-remotes::install_github("stemangiola/tidySingleCellExperiment@v1.7.2")
+remotes::install_github(c("stemangiola/tidySingleCellExperiment@v1.7.2", "stemangiola/tidySummarizedExperiment@v1.7.3", "stemangiola/tidybulk@v1.9.2"))
 
 # Install workshop package
 

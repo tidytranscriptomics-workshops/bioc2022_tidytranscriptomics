@@ -1,0 +1,59 @@
+---
+title: "Solutions"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Solutions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r message = FALSE}
+library(SingleCellExperiment)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(colorspace)
+library(dittoSeq)
+```
+
+## Question 1
+
+What is the proportion of gamma-delta T cells, among all cells? Use signature_score > 0.8 to identify gamma-delta T cells.
+
+```{r, eval=FALSE}
+
+seurat_obj |>
+  
+  
+  join_features(
+    features = c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"),
+    shape = "wide",
+    assay = "SCT"
+    
+  ) |>
+  
+  mutate(signature_score =
+           scales::rescale(CD3D + TRDC + TRGC1+ TRGC2, to=c(0,1)) -
+           scales::rescale(CD8A + CD8B, to=c(0,1))
+  ) |>
+
+  mutate(is_gamma-delta = signature_score > 0.8) |>
+  
+  count(is_gamma-delta) %>% 
+  summarise(proportion = n/sum(n))
+
+```
+
+## Question 2
+
+There is a cluster of cells characterised by a low RNA output (nCount_RNA < 100). Identify the cell composition (curated_cell_type) of that cluster.
+
+
+```{r, eval=FALSE}
+
+seurat_obj |>
+    filter(nCount_RNA < 100) %>% 
+    count(curated_cell_type)
+
+```
+

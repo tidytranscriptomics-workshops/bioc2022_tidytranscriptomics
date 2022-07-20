@@ -1,5 +1,9 @@
+
+library(tidyverse)
+library(glue)
 library(Seurat)
 library(tidyseurat)
+library(tidySingleCellExperiment)
 
 seurat_obj <- readRDS("/stornext/Bioinf/data/bioinf-data/Papenfuss_lab/projects/mangiola.s/PostDoc/oligo_breast/expanded_analyses_with_control/cancer_only_analyses/lymphoid/cancer_lymphoid_cell_type_curated.rds")
 
@@ -20,8 +24,28 @@ seurat_obj = seurat_obj %>% mutate(
 DefaultAssay(seurat_obj) = "SCT"
 seurat_obj[["integrated"]] = NULL
 
-sce_obj = seurat_obj %>% as.SingleCellExperiment()
+sce_obj = seurat_obj %>%
+	as.SingleCellExperiment() |>
+	
+	# Add factor of interest
+	nest(data = -file) |> 
+	mutate(condition = sample(c("treated", "untreated"), n(), replace = TRUE)) |>
+	unnest(data)
 
-job::job({
+# Parse
+sce_obj = 
+	sce_obj |> 
+	select(-condition) |>  
+	left_join(readRDS("~/metadata_oligo.rds")) |> 
+	rename(treatment = type) |> 
+	mutate(treatment = if_else(treatment=="OMBC", "treated", "untreated")) |> 
+	#select(-file) |> 
+	mutate(sample = glue("S{as.integer(as.factor(sample))}")) |> 
+	rename(cell_type = curated_cell_type) |> 
+
+	# filtering because of to few samples per cell types
+	filter(cell_type !="CD8+_Tem")
+
+# job::job({
 	save(sce_obj , file="data/sce_obj.rda", compress = "xz")
-})
+# })
