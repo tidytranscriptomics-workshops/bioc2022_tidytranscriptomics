@@ -22,4 +22,6 @@ navbar:
   right:
    - icon: fab fa-github
      href: https://github.com/tidytranscriptomics-workshops/bioc2022_tidytranscriptomics
-    
+   - icon: fab fa-docker
+     href: https://ghcr.io/tidytranscriptomics-workshops/bioc2022_tidytranscriptomics:latest
+     
