@@ -45,6 +45,8 @@ This workshop will demonstrate a real-world example of using tidy transcriptomic
 
 ## Slides
 
+*The embedded slides below may take a minute to appear.*
+
 <iframe 
     src="https://docs.google.com/gview?url=https://raw.githubusercontent.com/tidytranscriptomics-workshops/bioc2022_tidytranscriptomics/master/inst/bioc2022_tidytranscriptomics.pdf&embedded=true" 
     scrolling="yes" 
