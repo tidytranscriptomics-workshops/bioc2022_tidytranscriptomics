@@ -272,7 +272,7 @@ sce_obj_gamma_delta <-
         scales::rescale(CD8A + CD8B, to = c(0, 1))
   ) |>
     
-  filter(signature_score > 0.8)
+  filter(signature_score > 0.7)
 ```
 
 For comparison, we show the alternative using base R and SingleCellExperiment
@@ -300,16 +300,39 @@ sce_obj |>
 It is then possible to perform analyses on these gamma delta T cells by simply chaining further commands, such as below.
 
 ```{r eval = FALSE}
+library(batchelor)
+library(igraph)
+library(scran)
+library(magrittr)
 
-sce_obj_gamma_delta |>
+sce_obj_gamma_delta = 
+	sce_obj_gamma_delta |>
+	
   # Reanalyse
-  NormalizeData(assay = "RNA") |>
-  FindVariableFeatures(nfeatures = 100, assay = "RNA") |>
-  SplitObject(split.by = "file") |>
-  RunFastMNN(assay = "RNA") |>
-  RunUMAP(reduction = "mnn", dims = 1:20) |>
-  FindNeighbors(dims = 1:20, reduction = "mnn") |>
-  FindClusters(resolution = 0.3)
+	multiBatchNorm(batch = colData(sce_obj_gamma_delta)$sample) |> 
+	fastMNN(batch = colData(sce_obj_gamma_delta)$sample) |> 
+	
+	# Join old information
+	left_join(as_tibble(sce_obj_gamma_delta)) |> 
+ 
+	# Dimension reduction
+  runUMAP(ncomponents = 2, dimred="corrected") 
+  	
+  # Assign clusters to the 'colLabels'
+	# of the SingleCellExperiment object
+sce_obj_gamma_delta = 
+	sce_obj_gamma_delta |> 
+	mutate(
+		cluster = 
+			colLabels(sce_obj_gamma_delta) <- # from SingleCellExperiment
+			sce_obj_gamma_delta %>%
+  		buildSNNGraph(use.dimred="corrected") %>% # from scran - shared nearest neighbour
+			cluster_walktrap() %$% # from igraph
+			membership
+	)
+	
+
+sce_obj_gamma_delta |> select(batch, cluster, everything())
 ```
 
 It was also possible to visualise the cells as a 3D plot using plotly.
@@ -346,6 +369,7 @@ pbmc |>
 
 It is sometime useful to aggregate cell-wise transcript abundance into pseudobulk samples. It is possible to explore data and perform hypothesis testing with tools and data-source that we are more familiar with. For example, we can use edgeR in tidybulk to perform differential expression testing. For more details on pseudobulk analysis see [here](https://hbctraining.github.io/scRNA-seq/lessons/pseudobulk_DESeq2_scrnaseq.html).
 
+
 ### Data exploration using pseudobulk samples
 
 To do this, we will use a helper function called `aggregate_cells`, available in this workshop package, to combine the single cells into groups for each cell type for each sample.
@@ -367,7 +391,12 @@ pseudo_bulk <-
 pseudo_bulk
 ```
 
-With `tidySummarizedExperiment` is easy to stratify our dataset for iterative self-contained analyses.
+### Tidybulk and tidySummarizedExperiment
+
+With `tidySummarizedExperiment` and `tidybulk` is easy to stratify our dataset for iterative self-contained analyses.
+
+# <img src="inst/new_SE_usage-01.png" width="800px" />
+
 
 To explore the grouping, we can use tidyverse `slice` to choose a row (cell_type) and `pull` to extract the values from a column. If we pull the data column we can view the SummarizedExperiment object. 
 
