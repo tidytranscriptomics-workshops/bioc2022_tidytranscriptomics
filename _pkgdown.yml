@@ -18,6 +18,8 @@ navbar:
   left:
     - text: Workshop
       href: articles/tidytranscriptomics_case_study.html
+    - text: Supplementary 
+      href: articles/supplementary.html
 
   right:
    - icon: fab fa-github
