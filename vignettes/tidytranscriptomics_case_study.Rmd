@@ -30,9 +30,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Description
 
-This tutorial will present how to perform analysis of single-cell RNA sequencing data following the tidy data paradigm. The tidy data paradigm provides a standard way to organise data values within a dataset, where each variable is a column, each observation is a row, and data is manipulated using an easy-to-understand vocabulary. Most importantly, the data structure remains consistent across manipulation and analysis functions.
+This tutorial will showcase analysis of single-cell RNA sequencing data following the tidy data paradigm. The tidy data paradigm provides a standard way to organise data values within a dataset, where each variable is a column, each observation is a row, and data is manipulated using an easy-to-understand vocabulary. Most importantly, the data structure remains consistent across manipulation and analysis functions.
 
-This can be achieved with the integration of packages present in the R CRAN and Bioconductor ecosystem, including [tidySingleCellExperiment](https://stemangiola.github.io/tidySingleCellExperiment/) and [tidyverse](https://www.tidyverse.org/). These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data representation and analysis. For more information see the [tidy transcriptomics blog](https://stemangiola.github.io/tidytranscriptomics/).
+This can be achieved with the integration of packages present in the R CRAN and Bioconductor ecosystem, including [tidySingleCellExperiment](https://stemangiola.github.io/tidySingleCellExperiment/), [tidySummarizedExperiment](https://stemangiola.github.io/tidySummarizedExperiment/), [tidybulk](https://stemangiola.github.io/tidybulk/) and [tidyverse](https://www.tidyverse.org/). These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data representation and analysis. For more information see the [tidy transcriptomics blog](https://stemangiola.github.io/tidytranscriptomics/).
 
 ### Pre-requisites
 
@@ -59,7 +59,7 @@ This can be achieved with the integration of packages present in the R CRAN and 
 -   The fundamentals of single-cell data analysis
 -   The fundamentals of tidy data analysis
 
-This workshop will demonstrate a real-world example of using tidy transcriptomics packages, such as tidySingleCellExperiment and tidybulk, to perform a single cell analysis. This workshop is not a step-by-step introduction in how to perform single-cell analysis. For an overview of single-cell analysis steps performed in a tidy way please see the [ISMB2021 workshop](https://tidytranscriptomics-workshops.github.io/ismb2021_tidytranscriptomics/articles/tidytranscriptomics.html).
+This workshop will demonstrate a real-world example of using tidy transcriptomics packages to analyse single cell data. This workshop is not a step-by-step introduction in how to perform single-cell analysis. For an overview of single-cell analysis steps performed in a tidy way please see the [ISMB2021 workshop](https://tidytranscriptomics-workshops.github.io/ismb2021_tidytranscriptomics/articles/tidytranscriptomics.html).
 
 ## Getting started
 
@@ -82,7 +82,7 @@ Alternatively, you can view the material at the workshop webpage [here](https://
 
 ## Slides
 
-*The embedded slides below may take a minute to appear. You can also view or download [here](https://github.com/tidytranscriptomics-workshops/bioc2022_tidytranscriptomics/blob/master/inst/bioc2022_tidytranscriptomics.pdf)*
+*The embedded slides below may take a minute to appear. You can also view or download [here](https://github.com/tidytranscriptomics-workshops/bioc2022_tidytranscriptomics/blob/master/inst/bioc2022_tidytranscriptomics.pdf).*
 
 <iframe 
     src="https://docs.google.com/gview?url=https://raw.githubusercontent.com/tidytranscriptomics-workshops/bioc2022_tidytranscriptomics/master/inst/bioc2022_tidytranscriptomics.pdf&embedded=true" 
@@ -145,11 +145,19 @@ We can use `filter` to choose rows, for example, to see just the rows for the ce
 sce_obj |> filter(Phase == "G1")
 ```
 
-We can use `select` to choose columns, for example, to see the sample, cell, total cellular RNA
+We can use `select` to view columns, for example, to see the filename, total cellular RNA abundance and cell phase.
 
 ```{r}
-sce_obj |> select(.cell, nCount_RNA, Phase)
+sce_obj |> select(file, nCount_RNA, Phase)
 ```
+
+> As we did not output the .cell column we get a tibble instead of a SingleCellExperiment object and a message to let us know: "tidySingleCellExperiment says: Key columns are missing. A data frame is returned for independent data analysis." This is ok as it's what we want here when exploring the data.
+
+> If we use select to output the .cell (key) column we will also get any view-only columns returned, such as the UMAP columns generated during the preprocessing.
+
+>```{r}
+> sce_obj |> select(.cell, nCount_RNA, Phase)
+>```
 
 We can use `mutate` to create a column. For example, we could create a new `Phase_l` column that contains a lower-case version of `Phase`.
 
@@ -211,20 +219,18 @@ The object `sce_obj` we've been using was created as part of a study on breast c
 
 ## Analyse custom signature
 
-The researcher analysing this dataset wanted to to identify gamma delta T cells using a gene signature from a published paper [@Pizzolato2019].
+The researcher analysing this dataset wanted to identify gamma delta T cells using a gene signature from a published paper [@Pizzolato2019]. We'll show how that can be done here.
 
-With tidySingleCellExperiment's `join_features` the counts for the genes could be viewed as columns.
+With tidySingleCellExperiment's `join_features` we can view the counts for genes in the signature as columns joined to our single cell tibble.
 
 ```{r}
-
 sce_obj |>
   join_features(c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"), shape = "wide")
 ```
 
-They were able to use tidySingleCellExperiment's `join_features` to select the counts for the genes in the signature, followed by tidyverse `mutate` to easily create a column containing the signature score.
+We can use tidyverse `mutate` to create a column containing the signature score. To generate the score, we scale the sum of the 4 genes, CD3D, TRDC, TRGC1, TRGC2, and subtract the scaled sum of the 2 genes, CD8A and CD8B. `mutate` is powerful in enabling us to perform complex arithmetic operations easily.
 
 ```{r}
-
 sce_obj |>
   join_features(c("CD3D", "TRDC", "TRGC1", "TRGC2", "CD8A", "CD8B"), shape = "wide") |>
     
@@ -360,14 +366,14 @@ sce_obj_gamma_delta |> select(batch, cluster, everything())
 ```
 
 It is also possible to visualise the cells as a 3D plot using plotly.
-The example data used here only contains a few genes, for the sake of time and size in this demonstration, but below is how you could generate the 3 dimensions needed for 3D plot with a full dataset.
+The example data used here only contains a few genes, for the sake of time and size in this demonstration, but below is how you could generate the 3 dimensions needed for 3D plot with a full dataset. 
 
 ```{r eval = FALSE}
 single_cell_object |>
   RunUMAP(dims = 1:30, n.components = 3L, spread = 0.5, min.dist = 0.01, n.neighbors = 10L)
 ```
 
-We'll demonstrate creating a 3D plot using some data that has 3 UMAP dimensions.
+We'll demonstrate creating a 3D plot using some data that has 3 UMAP dimensions. This is a fantastic way to visualise both reduced dimensions and metadata in the same representation. 
 
 ```{r umap plot 2, message = FALSE, warning = FALSE}
 pbmc <- bioc2022tidytranscriptomics::sce_obj_UMAP3
@@ -385,22 +391,22 @@ pbmc |>
 
 # Exercises
 
-Using the `sce_obj`
+Using the `sce_obj`:
 
-1. What proportion of all cells are gamma-delta T cells? Use signature_score > 0.7 to identify gamma-delta T cells.
+    1. What proportion of all cells are gamma-delta T cells? Use signature_score > 0.7 to identify gamma-delta T cells.
 
-2. There is a cluster of cells characterised by a low RNA output (nCount_RNA < 100). Identify the cell composition (cell_type) of that cluster.
+    2. There is a cluster of cells characterised by a low RNA output (nCount_RNA < 100). Identify the cell composition (cell_type) of that cluster.
 
 # Pseudobulk analyses
 
-Next we want to identify genes whose transcription is affected by treatment in this dataset, comparing treated and untreated patients. We can do this with pseudobulk analysis. We aggregate cell-wise transcript abundance into pseudobulk samples and can then perform hypothesis testing using very well established bulk RNA sequencing tools. For example, we can use edgeR in tidybulk to perform differential expression testing. For more details on pseudobulk analysis see [here](https://hbctraining.github.io/scRNA-seq/lessons/pseudobulk_DESeq2_scrnaseq.html).
+Next we want to identify genes whose transcription is affected by treatment in this dataset, comparing treated and untreated patients. We can do this with pseudobulk analysis. We aggregate cell-wise transcript abundance into pseudobulk samples and can then perform hypothesis testing using the very well established bulk RNA sequencing tools. For example, we can use edgeR in tidybulk to perform differential expression testing. For more details on pseudobulk analysis see [here](https://hbctraining.github.io/scRNA-seq/lessons/pseudobulk_DESeq2_scrnaseq.html).
 
 We want to do it for each cell type and the tidy transcriptomics ecosystem makes this very easy. 
 
 
 ## Create pseudobulk samples
 
-To create pseudobulk samples from the single cell data, we will use a helper function called `aggregate_cells`, available in this workshop package. This function will combine the single cells into groups for each cell type for each sample.
+To create pseudobulk samples from the single cell data, we will use a helper function called `aggregate_cells`, available in this workshop package. This function will combine the single cells into a group for each cell type for each sample.
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE}
 library(glue)
@@ -489,7 +495,7 @@ pseudo_bulk <-
   mutate(data = map(data, ~ filter(.x, FDR < 0.5))) |>
 	
   # Filter cell types with no differential abundant gene-transcripts
-  # map_int is map that returns integer
+  # map_int is map that returns integer instead of list
   filter(map_int(data, ~ nrow(.x)) > 0) |>
     
   # Plot
