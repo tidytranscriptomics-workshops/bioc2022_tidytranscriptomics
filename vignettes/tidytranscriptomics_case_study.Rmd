@@ -395,7 +395,7 @@ pseudo_bulk
 
 With `tidySummarizedExperiment` and `tidybulk` is easy to stratify our dataset for iterative self-contained analyses.
 
-# <img src="inst/new_SE_usage-01.png" width="800px" />
+# <img src="../inst/new_SE_usage-01.png" width="800px" />
 
 
 To explore the grouping, we can use tidyverse `slice` to choose a row (cell_type) and `pull` to extract the values from a column. If we pull the data column we can view the SummarizedExperiment object. 
