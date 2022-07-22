@@ -17,13 +17,29 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Workshop introduction
 
+<p float="left">
+<img style="height:100px;" alt="BioC2022" src="https://bioc2022.bioconductor.org/img/carousel/BioC2022.png"/>
+<img style="height:100px;" alt="tidybulk" src="https://github.com/Bioconductor/BiocStickers/blob/master/tidybulk/tidybulk.png?raw=true"/>
+</p>
+
 ## Instructors
 
 *Dr. Stefano Mangiola* is currently a Postdoctoral researcher in the laboratory of Prof. Tony Papenfuss at the Walter and Eliza Hall Institute in Melbourne, Australia. His background spans from biotechnology to bioinformatics and biostatistics. His research focuses on prostate and breast tumour microenvironment, the development of statistical models for the analysis of RNA sequencing data, and data analysis and visualisation interfaces.
 
 *Dr. Maria Doyle* is the Application and Training Specialist for Research Computing at the Peter MacCallum Cancer Centre in Melbourne, Australia. She has a PhD in Molecular Biology and currently works in bioinformatics and data science education and training. She is passionate about supporting researchers, reproducible research, open source and tidy data.
 
-## Workshop goals and objectives
+## Description
+
+This tutorial will present how to perform analysis of single-cell RNA sequencing data following the tidy data paradigm. The tidy data paradigm provides a standard way to organise data values within a dataset, where each variable is a column, each observation is a row, and data is manipulated using an easy-to-understand vocabulary. Most importantly, the data structure remains consistent across manipulation and analysis functions.
+
+This can be achieved with the integration of packages present in the R CRAN and Bioconductor ecosystem, including [tidySingleCellExperiment](https://stemangiola.github.io/tidySingleCellExperiment/) and [tidyverse](https://www.tidyverse.org/). These packages are part of the tidytranscriptomics suite that introduces a tidy approach to RNA sequencing data representation and analysis. For more information see the [tidy transcriptomics blog](https://stemangiola.github.io/tidytranscriptomics/).
+
+### Pre-requisites
+
+* Basic familiarity with single-cell transcriptomic analyses
+* Basic familiarity with tidyverse
+
+## Goals and objectives
 
 * To approach single-cell data representation and analysis through a tidy data paradigm, integrating tidyverse with tidySingleCellExperiment.
 * Compare SingleCellExperiment and tidy representation  
@@ -51,8 +67,12 @@ This workshop will demonstrate a real-world example of using tidy transcriptomic
 
 Easiest way to run this material. We will use the Orchestra Cloud platform during the BioC2022 workshop.
 
--   Using the URL provided launch the workshop called "BioC2022: Tidy Transcriptomics For Single-Cell RNA Sequencing Analyses" **There are several tidy transcriptomics workshops. Be sure to select the BioC2022 one**.
--   Open `tidytranscriptomics_case_study.Rmd` in `bioc2022_tidytranscriptomcs/vignettes` folder
+1. Go to [Orchestra](http://app.orchestra.cancerdatasci.org/).
+2. Log in.
+3. Search for the workshop called "BioC2022: Tidy Transcriptomics For Single-Cell RNA Sequencing Analyses" **There are several tidy transcriptomics workshops. Be sure to select the BioC2022 one**.
+4. Click "Launch" (may take a minute or two).
+5. Follow instructions..
+6. Open `tidytranscriptomics_case_study.Rmd` in `bioc2022_tidytranscriptomcs/vignettes` folder
 
 ### Local
 
@@ -62,7 +82,7 @@ Alternatively, you can view the material at the workshop webpage [here](https://
 
 ## Slides
 
-*The embedded slides below may take a minute to appear. You can also download from [here](https://github.com/tidytranscriptomics-workshops/bioc2022_tidytranscriptomics/blob/master/inst/bioc2022_tidytranscriptomics.pdf)*
+*The embedded slides below may take a minute to appear. You can also view or download [here](https://github.com/tidytranscriptomics-workshops/bioc2022_tidytranscriptomics/blob/master/inst/bioc2022_tidytranscriptomics.pdf)*
 
 <iframe 
     src="https://docs.google.com/gview?url=https://raw.githubusercontent.com/tidytranscriptomics-workshops/bioc2022_tidytranscriptomics/master/inst/bioc2022_tidytranscriptomics.pdf&embedded=true" 
@@ -250,7 +270,7 @@ sce_obj |>
         scales::rescale(CD8A + CD8B, to = c(0, 1))
   ) |>
 
-  # plot cells with high score last        
+  # plot cells with high score last so they're not obscured by other cells
   arrange(signature_score) |>
     
   ggplot(aes(UMAP_1, UMAP_2, color = signature_score)) +
@@ -301,7 +321,7 @@ sce_obj |>
   subset(signature_score > 0.7)
 ```
 
-It is then possible to focus in and analyse just these gamma delta T cells. We can chain Bioconductor and tidyverse commands to do this.
+We can then focus on just these gamma delta T cells and chain Bioconductor and tidyverse commands together to analyse.
 
 ```{r eval = FALSE}
 library(batchelor)
@@ -339,7 +359,7 @@ sce_obj_gamma_delta =
 sce_obj_gamma_delta |> select(batch, cluster, everything())
 ```
 
-It was also possible to visualise the cells as a 3D plot using plotly.
+It is also possible to visualise the cells as a 3D plot using plotly.
 The example data used here only contains a few genes, for the sake of time and size in this demonstration, but below is how you could generate the 3 dimensions needed for 3D plot with a full dataset.
 
 ```{r eval = FALSE}
@@ -365,20 +385,22 @@ pbmc |>
 
 # Exercises
 
+Using the `sce_obj`
+
 1. What proportion of all cells are gamma-delta T cells? Use signature_score > 0.7 to identify gamma-delta T cells.
 
 2. There is a cluster of cells characterised by a low RNA output (nCount_RNA < 100). Identify the cell composition (cell_type) of that cluster.
 
 # Pseudobulk analyses
 
-Now we want to identify genes whose transcription is associated with treatment, pseudo bulk analysis is how we can do this. It aggregates cell-wise transcript abundance into pseudobulk samples and enables us to perform hypothesis testing with tools and data-source that we are more familiar with. For example, we can use edgeR in tidybulk to perform differential expression testing. For more details on pseudobulk analysis see [here](https://hbctraining.github.io/scRNA-seq/lessons/pseudobulk_DESeq2_scrnaseq.html).
+Next we want to identify genes whose transcription is affected by treatment in this dataset, comparing treated and untreated patients. We can do this with pseudobulk analysis. We aggregate cell-wise transcript abundance into pseudobulk samples and can then perform hypothesis testing using very well established bulk RNA sequencing tools. For example, we can use edgeR in tidybulk to perform differential expression testing. For more details on pseudobulk analysis see [here](https://hbctraining.github.io/scRNA-seq/lessons/pseudobulk_DESeq2_scrnaseq.html).
 
-We want to do it for each cell type and the tidy transcriptomic ecosystem makes this very easy. 
+We want to do it for each cell type and the tidy transcriptomics ecosystem makes this very easy. 
 
 
-## Data exploration using pseudobulk samples
+## Create pseudobulk samples
 
-To do this, we will use a helper function called `aggregate_cells`, available in this workshop package, to combine the single cells into groups for each cell type for each sample.
+To create pseudobulk samples from the single cell data, we will use a helper function called `aggregate_cells`, available in this workshop package. This function will combine the single cells into groups for each cell type for each sample.
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE}
 library(glue)
@@ -401,12 +423,13 @@ pseudo_bulk
 
 ## Tidybulk and tidySummarizedExperiment
 
-With `tidySummarizedExperiment` and `tidybulk` is easy to stratify our dataset for iterative self-contained analyses.
+With `tidySummarizedExperiment` and `tidybulk` it is easy to split the data into groups and perform analyses on each without needing to create separate objects.
 
 ```{r, echo=FALSE, out.width = "800px"}
 knitr::include_graphics("../inst/vignettes/new_SE_usage-01.png")
 ```
 
+We use tidyverse `nest` to group the data. The command below will create a tibble containing a column with a SummarizedExperiment object for each cell type. `nest` is similar to tidyverse `group_by`, except with `nest` each group is stored in a single row, and can be a complex object such as a plot or SummarizedExperiment.
 
 ```{r}
 pseudo_bulk |>
@@ -421,7 +444,7 @@ pseudo_bulk |>
   pull(data)
 ```
 
-We can then identify differentially expressed genes for each cell type for our condition of interest, treated versus untreated patients.
+We can then identify differentially expressed genes for each cell type for our condition of interest, treated versus untreated patients. We use tidyverse `map` to apply differential expression functions to each cell type group in the nested data. 
 
 ```{r message=FALSE, warning=FALSE}
 # Differential transcription abundance
@@ -430,7 +453,7 @@ pseudo_bulk <-
 
   nest(data = -cell_type) |> 
     
-  # map inputs a data column (.x)  
+  # map accepts a data column (.x) and applies functions to each element
   mutate(data = map(
     data,
     ~ .x |>
@@ -442,9 +465,12 @@ pseudo_bulk <-
   ))
 ```
 
+The output is again a tibble containing a SummarizedExperiment object for each cell type.
+
 ```{r}
 pseudo_bulk
 ```
+If we pull out the SummarizedExperiment object for the first cell type, as before, we can see it now has columns containing the differential expression results (e.g. logFC, PValue).
 
 ```{r}
 pseudo_bulk |> 
@@ -452,7 +478,7 @@ pseudo_bulk |>
   pull(data)
 ```
 
-Now we can create plots for significant genes for each cell type, visualising their transcriptional abundance, without needing to create multiple objects. 
+Now we can create plots for significant genes for each cell type, visualising their transcriptional abundance, also without needing to create multiple objects. 
 
 ```{r message = FALSE}
 pseudo_bulk <-
