@@ -94,42 +94,66 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://plotly-r.com" class="external-link">plotly</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://colorspace.R-Forge.R-project.org/" class="external-link">colorspace</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">dittoSeq</span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">dittoSeq</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/stemangiola/tidySingleCellExperiment" class="external-link">tidySingleCellExperiment</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sce_obj</span> <span class="op">&lt;-</span> <span class="fu">bioc2022tidytranscriptomics</span><span class="fu">::</span><span class="va"><a href="../reference/sce_obj.html">sce_obj</a></span></span></code></pre></div>
 <div class="section level2">
 <h2 id="question-1">Question 1<a class="anchor" aria-label="anchor" href="#question-1"></a>
 </h2>
-<p>What is the proportion of gamma-delta T cells, among all cells? Use
-signature_score &gt; 0.8 to identify gamma-delta T cells.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>seurat_obj <span class="sc">|&gt;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">join_features</span>(</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">features =</span> <span class="fu">c</span>(<span class="st">"CD3D"</span>, <span class="st">"TRDC"</span>, <span class="st">"TRGC1"</span>, <span class="st">"TRGC2"</span>, <span class="st">"CD8A"</span>, <span class="st">"CD8B"</span>),</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">shape =</span> <span class="st">"wide"</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">assay =</span> <span class="st">"SCT"</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">signature_score =</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>           scales<span class="sc">::</span><span class="fu">rescale</span>(CD3D <span class="sc">+</span> TRDC <span class="sc">+</span> TRGC1<span class="sc">+</span> TRGC2, <span class="at">to=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)) <span class="sc">-</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>           scales<span class="sc">::</span><span class="fu">rescale</span>(CD8A <span class="sc">+</span> CD8B, <span class="at">to=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(is_gamma<span class="sc">-</span><span class="at">delta =</span> signature_score <span class="sc">&gt;</span> <span class="fl">0.8</span>) <span class="sc">|&gt;</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(is_gamma<span class="sc">-</span>delta) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">proportion =</span> n<span class="sc">/</span><span class="fu">sum</span>(n))</span></code></pre></div>
+<p>What proportion of all cells are gamma-delta T cells? Use
+signature_score &gt; 0.7 to identify gamma-delta T cells.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sce_obj</span> <span class="op">|&gt;</span></span>
+<span>  </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ttservice/man/join_features.html" class="external-link">join_features</a></span><span class="op">(</span></span>
+<span>    features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD3D"</span>, <span class="st">"TRDC"</span>, <span class="st">"TRGC1"</span>, <span class="st">"TRGC2"</span>, <span class="st">"CD8A"</span>, <span class="st">"CD8B"</span><span class="op">)</span>,</span>
+<span>    shape <span class="op">=</span> <span class="st">"wide"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>signature_score <span class="op">=</span></span>
+<span>           <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/rescale.html" class="external-link">rescale</a></span><span class="op">(</span><span class="va">CD3D</span> <span class="op">+</span> <span class="va">TRDC</span> <span class="op">+</span> <span class="va">TRGC1</span> <span class="op">+</span> <span class="va">TRGC2</span>, to<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span></span>
+<span>           <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/rescale.html" class="external-link">rescale</a></span><span class="op">(</span><span class="va">CD8A</span> <span class="op">+</span> <span class="va">CD8B</span>, to<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>gamma_delta <span class="op">=</span> <span class="va">signature_score</span> <span class="op">&gt;</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">gamma_delta</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>proportion <span class="op">=</span> <span class="va">n</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## tidySingleCellExperiment says: A data frame is returned for independent data analysis.</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 2 × 1</span></span></span>
+<span><span class="co">##   proportion</span></span>
+<span><span class="co">##        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span>     0.980 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span>     0.020<span style="text-decoration: underline;">1</span></span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="question-2">Question 2<a class="anchor" aria-label="anchor" href="#question-2"></a>
 </h2>
 <p>There is a cluster of cells characterised by a low RNA output
-(nCount_RNA &lt; 100). Identify the cell composition (curated_cell_type)
-of that cluster.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">seurat_obj</span> <span class="op">|&gt;</span></span>
+(nCount_RNA &lt; 100). Identify the cell composition (cell_type) of that
+cluster.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sce_obj</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">nCount_RNA</span> <span class="op">&lt;</span> <span class="fl">100</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">curated_cell_type</span><span class="op">)</span></span></code></pre></div>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">cell_type</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## tidySingleCellExperiment says: A data frame is returned for independent data analysis.</span></span></code></pre>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 13 × 2</span></span></span>
+<span><span class="co">##    cell_type                                       n</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>                                       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> CD4+_ribosome_rich                            130</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> CD4+_Tcm_S100A4_IL32_IL7R_VIM                 176</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> CD8+_high_ribonucleosome                      205</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> CD8+_Tcm                                      250</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> CD8+_transitional_effector_GZMK_KLRB1_LYAR4   225</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> HSC_lymphoid_myeloid_like                      51</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> limphoid_myeloid_like_HLA_CD74                 24</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> MAIT                                           80</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> NK_cells                                      201</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> NK_cycling                                      9</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">11</span> T_cell:CD8+_other                              99</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">12</span> TCR_V_Delta_1                                 507</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">13</span> TCR_V_Delta_2                                 118</span></span></code></pre>
 </div>
   </div>
 

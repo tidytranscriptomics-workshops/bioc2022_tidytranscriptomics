@@ -95,13 +95,14 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://colorspace.R-Forge.R-project.org/" class="external-link">colorspace</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">dittoSeq</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/stemangiola/tidySingleCellExperiment" class="external-link">tidySingleCellExperiment</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/stemangiola/tidygate" class="external-link">tidygate</a></span><span class="op">)</span></span></code></pre></div>
-<p>The gamma delta T cells (the blue cluster on the left with high
-signature score) could be interactively selected from the plot using the
-tidygate package.</p>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/stemangiola/tidygate" class="external-link">tidygate</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sce_obj</span> <span class="op">&lt;-</span> <span class="fu">bioc2022tidytranscriptomics</span><span class="fu">::</span><span class="va"><a href="../reference/sce_obj.html">sce_obj</a></span></span></code></pre></div>
+<p>Instead of filtering using a specified threshold, the gamma delta T
+cells could be interactively selected from the plot using the tidygate
+package.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sce_obj</span> <span class="op">|&gt;</span></span>
-<span></span>
 <span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/ttservice/man/join_features.html" class="external-link">join_features</a></span><span class="op">(</span></span>
 <span>    features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD3D"</span>, <span class="st">"TRDC"</span>, <span class="st">"TRGC1"</span>, <span class="st">"TRGC2"</span>, <span class="st">"CD8A"</span>, <span class="st">"CD8B"</span> <span class="op">)</span>, shape <span class="op">=</span> <span class="st">"wide"</span></span>
@@ -117,8 +118,8 @@ tidygate package.</p>
 <span>    .size <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>    .color <span class="op">=</span><span class="va">signature_score</span></span>
 <span>  <span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>After the selection we can reload from file the gate drawn for
-reproducibility.</p>
+<p>After the selection we could reload from a file the gate that was
+drawn, for reproducibility.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sce_obj</span> <span class="op">|&gt;</span></span>
 <span></span>
@@ -138,11 +139,33 @@ reproducibility.</p>
 <span>    .color <span class="op">=</span><span class="va">signature_score</span>,</span>
 <span>    gate_list <span class="op">=</span> <span class="fu">bioc2022tidytranscriptomics</span><span class="fu">::</span><span class="va"><a href="../reference/gate_sce_obj.html">gate_sce_obj</a></span></span>
 <span>  <span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>And the dataset could be filtered for just these cells using
-tidyverse <code>filter</code>.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sce_obj</span> <span class="op">|&gt;</span></span>
-<span></span>
+<pre><code><span><span class="co">## <span style="color: #949494;"># A SingleCellExperiment-tibble abstraction: 3,580 × 26</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># </span><span style="color: #555555;">Features=482 | Cells=3580 | Assays=counts, logcounts</span></span></span>
+<span><span class="co">##    .cell      Barcode batch BCB    S.Score G2M.S…¹ Phase cell_…² nCoun…³ nFeat…⁴</span></span>
+<span><span class="co">##    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 1</span> 1_AAATGGA… AAATGG… 1     BCB1… -<span style="color: #BB0000;">2.07</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">0.060</span><span style="color: #BB0000; text-decoration: underline;">2</span> G1    TCR_V_…     215      36</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 2</span> 1_AACAAGA… AACAAG… 1     BCB1…  2.09<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">0.035</span><span style="color: #BB0000; text-decoration: underline;">7</span> S     CD8+_t…     145      41</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 3</span> 1_AACGTCA… AACGTC… 1     BCB1… -<span style="color: #BB0000;">2.54</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">0.133</span>  G1    CD8+_h…     356      44</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 4</span> 1_AACTTCT… AACTTC… 1     BCB1…  2.85<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">0.163</span>  S     CD8+_t…     385      58</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 5</span> 1_AAGTCGT… AAGTCG… 1     BCB1… -<span style="color: #BB0000;">2.30</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">0.058</span><span style="color: #BB0000; text-decoration: underline;">1</span> G1    MAIT        352      42</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 6</span> 1_AATGAAG… AATGAA… 1     BCB1…  1.09<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">0.062</span><span style="color: #BB0000; text-decoration: underline;">1</span> S     CD4+_r…     335      40</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 7</span> 1_ACAAAGA… ACAAAG… 1     BCB1… -<span style="color: #BB0000;">2.06</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">0.040</span><span style="color: #BB0000; text-decoration: underline;">9</span> G1    CD4+_T…     242      39</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 8</span> 1_ACACGCG… ACACGC… 1     BCB1… -<span style="color: #BB0000;">3.95</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-4</span> -<span style="color: #BB0000;">0.176</span>  G1    CD8+_h…     438      45</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;"> 9</span> 1_ACATGCA… ACATGC… 1     BCB1… -<span style="color: #BB0000;">4.09</span><span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">0.082</span><span style="color: #BB0000; text-decoration: underline;">9</span> G1    CD4+_r…     180      39</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">10</span> 1_ACGATCA… ACGATC… 1     BCB1…  8.82<span style="color: #949494;">e</span><span style="color: #BB0000;">-2</span> -<span style="color: #BB0000;">0.039</span><span style="color: #BB0000; text-decoration: underline;">7</span> S     CD4+_r…      82      34</span></span>
+<span><span class="co">## <span style="color: #949494;"># … with 3,570 more rows, 16 more variables: nCount_SCT &lt;int&gt;,</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   nFeature_SCT &lt;int&gt;, ident &lt;fct&gt;, file &lt;chr&gt;, treatment &lt;chr&gt;,</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   sample &lt;glue&gt;, CD3D &lt;dbl&gt;, TRDC &lt;dbl&gt;, TRGC1 &lt;dbl&gt;, TRGC2 &lt;dbl&gt;,</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   CD8A &lt;dbl&gt;, CD8B &lt;dbl&gt;, signature_score &lt;dbl&gt;, gate &lt;int&gt;, UMAP_1 &lt;dbl&gt;,</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   UMAP_2 &lt;dbl&gt;, and abbreviated variable names ¹​G2M.Score, ²​cell_type,</span></span></span>
+<span><span class="co">## <span style="color: #949494;">#   ³​nCount_RNA, ⁴​nFeature_RNA</span></span></span>
+<span><span class="co">## <span style="color: #949494;"># ℹ Use `print(n = ...)` to see more rows, and `colnames()` to see all variable names</span></span></span></code></pre>
+<p>The dataset can be filtered for just these cells using tidyverse
+<code>filter</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sce_obj_gamma_delta</span> <span class="op">&lt;-</span></span>
+<span>    </span>
+<span>  <span class="va">sce_obj</span> <span class="op">|&gt;</span></span>
 <span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/ttservice/man/join_features.html" class="external-link">join_features</a></span><span class="op">(</span></span>
 <span>    features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD3D"</span>, <span class="st">"TRDC"</span>, <span class="st">"TRGC1"</span>, <span class="st">"TRGC2"</span>, <span class="st">"CD8A"</span>, <span class="st">"CD8B"</span> <span class="op">)</span>, shape <span class="op">=</span> <span class="st">"wide"</span></span>
@@ -157,65 +180,6 @@ tidyverse <code>filter</code>.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>gate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/tidygate/man/gate_chr-methods.html" class="external-link">gate_int</a></span><span class="op">(</span><span class="va">UMAP_1</span>, <span class="va">UMAP_2</span>, gate_list <span class="op">=</span> <span class="fu">bioc2022tidytranscriptomics</span><span class="fu">::</span><span class="va"><a href="../reference/gate_sce_obj.html">gate_sce_obj</a></span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">gate</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p>It was then possible to perform analyses on these gamma delta T cells
-by simply chaining further commands, such as below.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sce_obj</span> <span class="op">|&gt;</span></span>
-<span></span>
-<span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/ttservice/man/join_features.html" class="external-link">join_features</a></span><span class="op">(</span></span>
-<span>    features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD3D"</span>, <span class="st">"TRDC"</span>, <span class="st">"TRGC1"</span>, <span class="st">"TRGC2"</span>, <span class="st">"CD8A"</span>, <span class="st">"CD8B"</span><span class="op">)</span>,   shape <span class="op">=</span> <span class="st">"wide"</span></span>
-<span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>signature_score <span class="op">=</span></span>
-<span>           <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/rescale.html" class="external-link">rescale</a></span><span class="op">(</span><span class="va">CD3D</span> <span class="op">+</span> <span class="va">TRDC</span> <span class="op">+</span> <span class="va">TRGC1</span><span class="op">+</span> <span class="va">TRGC2</span>, to<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span></span>
-<span>           <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/rescale.html" class="external-link">rescale</a></span><span class="op">(</span><span class="va">CD8A</span> <span class="op">+</span> <span class="va">CD8B</span>, to<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span> gate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/tidygate/man/gate_chr-methods.html" class="external-link">gate_int</a></span><span class="op">(</span><span class="va">UMAP_1</span>, <span class="va">UMAP_2</span>, gate_list <span class="op">=</span> <span class="fu">bioc2022tidytranscriptomics</span><span class="fu">::</span><span class="va"><a href="../reference/gate_sce_obj.html">gate_sce_obj</a></span><span class="op">)</span> <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">gate</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span></span>
-<span>  <span class="co"># Reanalyse</span></span>
-<span>  <span class="fu">NormalizeData</span><span class="op">(</span>assay<span class="op">=</span><span class="st">"RNA"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">FindVariableFeatures</span><span class="op">(</span> nfeatures <span class="op">=</span> <span class="fl">100</span>, assay<span class="op">=</span><span class="st">"RNA"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">SplitObject</span><span class="op">(</span>split.by <span class="op">=</span> <span class="st">"file"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">RunFastMNN</span><span class="op">(</span>assay<span class="op">=</span><span class="st">"RNA"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">RunUMAP</span><span class="op">(</span>reduction <span class="op">=</span> <span class="st">"mnn"</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">FindNeighbors</span><span class="op">(</span> dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, reduction <span class="op">=</span> <span class="st">"mnn"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">FindClusters</span><span class="op">(</span> resolution <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span></code></pre></div>
-<p>For comparison, we show the alternative using base R and
-SingleCellExperiment</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">counts_positive</span> <span class="op">=</span></span>
-<span>  <span class="fu">GetAssayData</span><span class="op">(</span><span class="va">sce_obj</span>, assay<span class="op">=</span><span class="st">"SCT"</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD3D"</span>, <span class="st">"TRDC"</span>, <span class="st">"TRGC1"</span>, <span class="st">"TRGC2"</span><span class="op">)</span>,<span class="op">]</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/rescale.html" class="external-link">rescale</a></span><span class="op">(</span>to<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">counts_negative</span> <span class="op">=</span></span>
-<span>  <span class="fu">GetAssayData</span><span class="op">(</span><span class="va">sce_obj</span>, assay<span class="op">=</span><span class="st">"SCT"</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CD8A"</span>, <span class="st">"CD8B"</span><span class="op">)</span>,<span class="op">]</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums</a></span><span class="op">(</span><span class="op">)</span>  <span class="op">|&gt;</span></span>
-<span>  <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/rescale.html" class="external-link">rescale</a></span><span class="op">(</span>to<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">sce_obj</span><span class="op">$</span><span class="va">signature_score</span> <span class="op">=</span> <span class="va">counts_positive</span> <span class="op">-</span> <span class="va">counts_negative</span></span>
-<span></span>
-<span><span class="va">p</span> <span class="op">=</span> <span class="fu">FeaturePlot</span><span class="op">(</span><span class="va">sce_obj</span>, features <span class="op">=</span> <span class="st">"signature_score"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># This is not reproducible (in contrast to tidygate)</span></span>
-<span><span class="va">sce_obj</span><span class="op">$</span><span class="va">within_gate</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">sce_obj</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu">CellSelector</span><span class="op">(</span>plot <span class="op">=</span> <span class="va">p</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">sce_obj</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">within_gate</span> <span class="op">==</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span></span>
-<span>  <span class="co"># Reanalyse</span></span>
-<span>  <span class="fu">NormalizeData</span><span class="op">(</span>assay<span class="op">=</span><span class="st">"RNA"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">FindVariableFeatures</span><span class="op">(</span> nfeatures <span class="op">=</span> <span class="fl">100</span>, assay<span class="op">=</span><span class="st">"RNA"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">SplitObject</span><span class="op">(</span>split.by <span class="op">=</span> <span class="st">"file"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">RunFastMNN</span><span class="op">(</span>assay<span class="op">=</span><span class="st">"RNA"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">RunUMAP</span><span class="op">(</span>reduction <span class="op">=</span> <span class="st">"mnn"</span>, dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">FindNeighbors</span><span class="op">(</span> dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, reduction <span class="op">=</span> <span class="st">"mnn"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">FindClusters</span><span class="op">(</span> resolution <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span></code></pre></div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
