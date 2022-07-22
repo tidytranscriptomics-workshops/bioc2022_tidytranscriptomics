@@ -93,6 +93,6 @@ To run the code, you could then copy and paste the code from the workshop vignet
 
 ## Instructor names and contact information
 
-* Maria Doyle <Maria.Doyle at petermac.org>  
 * Stefano Mangiola <mangiola.s at wehi.edu.au>
+* Maria Doyle <Maria.Doyle at petermac.org>  
 

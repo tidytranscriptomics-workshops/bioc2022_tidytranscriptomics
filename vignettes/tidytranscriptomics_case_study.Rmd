@@ -150,14 +150,14 @@ We can use `select` to view columns, for example, to see the filename, total cel
 ```{r}
 sce_obj |> select(file, nCount_RNA, Phase)
 ```
+A couple of things to note with `select`
 
-> As we did not output the .cell column we get a tibble instead of a SingleCellExperiment object and a message to let us know: "tidySingleCellExperiment says: Key columns are missing. A data frame is returned for independent data analysis." This is ok as it's what we want here when exploring the data.
+* As we did not output the .cell column we get a tibble instead of a SingleCellExperiment object and a message to let us know: `tidySingleCellExperiment says: Key columns are missing. A data frame is returned for independent data analysis.` This is ok as it's what we want here when viewing the columns.
 
-> If we use select to output the .cell (key) column we will also get any view-only columns returned, such as the UMAP columns generated during the preprocessing.
-
->```{r}
-> sce_obj |> select(.cell, nCount_RNA, Phase)
->```
+ * If we use `select` to output the .cell (key) column we will also get any view-only columns returned, such as the UMAP columns generated during the preprocessing.
+    ```{r}
+     sce_obj |> select(.cell, nCount_RNA, Phase)
+    ```
 
 We can use `mutate` to create a column. For example, we could create a new `Phase_l` column that contains a lower-case version of `Phase`.
 
@@ -393,9 +393,9 @@ pbmc |>
 
 Using the `sce_obj`:
 
-    1. What proportion of all cells are gamma-delta T cells? Use signature_score > 0.7 to identify gamma-delta T cells.
+1. What proportion of all cells are gamma-delta T cells? Use signature_score > 0.7 to identify gamma-delta T cells.
 
-    2. There is a cluster of cells characterised by a low RNA output (nCount_RNA < 100). Identify the cell composition (cell_type) of that cluster.
+2. There is a cluster of cells characterised by a low RNA output (nCount_RNA < 100). Identify the cell composition (cell_type) of that cluster.
 
 # Pseudobulk analyses
 
