@@ -342,6 +342,7 @@ We can then focus on just these gamma delta T cells and chain Bioconductor and t
 ```{r eval = FALSE}
 library(batchelor)
 library(igraph)
+library(scater)
 library(scran)
 library(magrittr)
 

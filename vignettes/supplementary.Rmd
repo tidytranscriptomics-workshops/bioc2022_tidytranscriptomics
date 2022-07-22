@@ -13,10 +13,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r message = FALSE}
-library(batchelor)
-library(igraph)
-library(scran)
-library(magrittr)
 library(ggplot2)
 library(plotly)
 library(dplyr)
@@ -96,25 +92,3 @@ sce_obj_gamma_delta <-
 
   filter(gate == 1)
 ```
-
-For comparison, we show the alternative using base R and SingleCellExperiment.
-
-```{r}
-counts_positive <-
-  assay(sce_obj)[c("CD3D", "TRDC", "TRGC1", "TRGC2"),] |>
-  colSums() |>
-  scales::rescale(to=c(0,1))
-
-counts_negative <-
-  assay(sce_obj)[c("CD8A", "CD8B"),] |>
-  colSums()  |>
-  scales::rescale(to=c(0,1))
-
-sce_obj$signature_score <- counts_positive - counts_negative
-
-# This is not reproducible (in contrast to tidygate)
-sce_obj$within_gate <- colnames(sce_obj) %in% CellSelector(plot = p)
-
-sce_obj_gamma_delta <- sce_obj[, sce_obj$within_gate == TRUE]
-```
-

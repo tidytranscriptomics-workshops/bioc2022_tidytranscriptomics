@@ -24,6 +24,8 @@ Imports:
     tidybulk,
     tidygate,
     scater,
+    scran,
+    batchelor,
     stats,
     utils,
     tibble,
