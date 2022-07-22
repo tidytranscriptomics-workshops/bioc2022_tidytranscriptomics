@@ -15,6 +15,8 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Workshop introduction
+
 ## Instructors
 
 *Dr. Stefano Mangiola* is currently a Postdoctoral researcher in the laboratory of Prof. Tony Papenfuss at the Walter and Eliza Hall Institute in Melbourne, Australia. His background spans from biotechnology to bioinformatics and biostatistics. His research focuses on prostate and breast tumour microenvironment, the development of statistical models for the analysis of RNA sequencing data, and data analysis and visualisation interfaces.
@@ -43,18 +45,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 This workshop will demonstrate a real-world example of using tidy transcriptomics packages, such as tidySingleCellExperiment and tidybulk, to perform a single cell analysis. This workshop is not a step-by-step introduction in how to perform single-cell analysis. For an overview of single-cell analysis steps performed in a tidy way please see the [ISMB2021 workshop](https://tidytranscriptomics-workshops.github.io/ismb2021_tidytranscriptomics/articles/tidytranscriptomics.html).
 
-## Slides
-
-*The embedded slides below may take a minute to appear.*
-
-<iframe 
-    src="https://docs.google.com/gview?url=https://raw.githubusercontent.com/tidytranscriptomics-workshops/bioc2022_tidytranscriptomics/master/inst/bioc2022_tidytranscriptomics.pdf&embedded=true" 
-    scrolling="yes" 
-    style="width:100%; height:600px;" 
-    frameborder="0">
-</iframe>
-
-
 ## Getting started
 
 ### Cloud
@@ -70,8 +60,19 @@ We will use the Orchestra Cloud platform during the BioC2022 workshop and this m
 
 Alternatively, you can view the material at the workshop webpage [here](https://tidytranscriptomics-workshops.github.io/bioc2022_tidytranscriptomics/articles/tidytranscriptomics_case_study.html).
 
+## Slides
 
-## Introduction to tidySingleCellExperiment
+*The embedded slides below may take a minute to appear. You can also download from [here](https://github.com/tidytranscriptomics-workshops/bioc2022_tidytranscriptomics/blob/master/inst/bioc2022_tidytranscriptomics.pdf)*
+
+<iframe 
+    src="https://docs.google.com/gview?url=https://raw.githubusercontent.com/tidytranscriptomics-workshops/bioc2022_tidytranscriptomics/master/inst/bioc2022_tidytranscriptomics.pdf&embedded=true" 
+    scrolling="yes" 
+    style="width:100%; height:600px;" 
+    frameborder="0">
+</iframe>
+
+
+# Introduction to tidySingleCellExperiment
 
 ```{r message = FALSE}
 # Load packages
@@ -106,15 +107,15 @@ library(tidySingleCellExperiment)
 sce_obj
 ```
 
-It can be interacted with using [SingleCellExperiment commands](https://bioconductor.org/packages/devel/bioc/vignettes/SingleCellExperiment/inst/doc/intro.html) such as `assay`.
+It can be interacted with using [SingleCellExperiment commands](https://bioconductor.org/packages/devel/bioc/vignettes/SingleCellExperiment/inst/doc/intro.html) such as `assays`.
 
 ```{r}
-Assays(sce_obj)
+assays(sce_obj)
 ```
 
 We can also interact with our object as we do with any tidyverse tibble.
 
-### Tidyverse commands
+## Tidyverse commands
 
 We can use tidyverse commands, such as `filter`, `select` and `mutate` to explore the tidySingleCellExperiment object. Some examples are shown below and more can be seen at the tidySingleCellExperiment website [here](https://stemangiola.github.io/tidySingleCellExperiment/articles/introduction.html#tidyverse-commands-1).
 
@@ -130,7 +131,7 @@ We can use `select` to choose columns, for example, to see the sample, cell, tot
 sce_obj |> select(.cell, nCount_RNA, Phase)
 ```
 
-We can use `mutate` to create a column. For example, we could create a new `ident_l` column that contains a lower-case version of `ident`.
+We can use `mutate` to create a column. For example, we could create a new `Phase_l` column that contains a lower-case version of `Phase`.
 
 ```{r}
 sce_obj |>
@@ -147,16 +148,16 @@ sce_obj |> select(file)
 ```
 
 ```{r}
-# Create columns for sample and group
+# Create column for sample
 sce_obj <- sce_obj |>
-  # Extract sample and group
+  # Extract sample
   extract(file, "sample", "../data/.*/([a-zA-Z0-9_-]+)/outs.+", remove = FALSE)
 
 # Take a look
-sce_obj |> select(sample)
+sce_obj |> select(sample, everything())
 ```
 
-We could use tidyverse `unite` to combine columns, for example to create a new column for sample id combining the sample and BCB columns.
+We could use tidyverse `unite` to combine columns, for example to create a new column for sample id combining the sample and patient id (BCB) columns.
 
 ```{r}
 sce_obj <- sce_obj |> unite("sample_id", sample, BCB, remove = FALSE)
@@ -166,9 +167,9 @@ sce_obj |> select(sample_id, sample, BCB)
 ```
 
 
-## Case study
+# Case study
 
-### Data pre-processing
+## Data pre-processing
 
 The object `sce_obj` we've been using was created as part of a study on breast cancer systemic immune response. Peripheral blood mononuclear cells have been sequenced for RNA at the single-cell level. The steps used to generate the object are summarised below.
 
@@ -188,7 +189,7 @@ The object `sce_obj` we've been using was created as part of a study on breast c
 
 -   Cells with similar transcriptome profiles were grouped into clusters using Louvain clustering from `scran`.
 
-### Analyse custom signature
+## Analyse custom signature
 
 The researcher analysing this dataset wanted to to identify gamma delta T cells using a gene signature from a published paper [@Pizzolato2019].
 
@@ -248,7 +249,8 @@ sce_obj |>
       scales::rescale(CD3D + TRDC + TRGC1 + TRGC2, to = c(0, 1)) -
         scales::rescale(CD8A + CD8B, to = c(0, 1))
   ) |>
-    
+
+  # plot cells with high score last        
   arrange(signature_score) |>
     
   ggplot(aes(UMAP_1, UMAP_2, color = signature_score)) +
@@ -257,7 +259,7 @@ sce_obj |>
   bioc2022tidytranscriptomics::theme_multipanel
 ```
 
-For exploratory analyses, we can select the gamma delta T cells, the red cluster on the left with high signature score. We'll filter for cells with a signature score > 0.8.
+For exploratory analyses, we can select the gamma delta T cells, the red cluster on the left with high signature score. We'll filter for cells with a signature score > 0.7.
 
 ```{r}
 
@@ -296,10 +298,10 @@ sce_obj$signature_score <- counts_positive - counts_negative
 FeaturePlot(sce_obj, features = "signature_score")
 
 sce_obj |>
-  subset(signature_score > 0.8)
+  subset(signature_score > 0.7)
 ```
 
-It is then possible to perform analyses on these gamma delta T cells by simply chaining further commands, such as below.
+It is then possible to focus in and analyse just these gamma delta T cells. We can chain Bioconductor and tidyverse commands to do this.
 
 ```{r eval = FALSE}
 library(batchelor)
@@ -361,28 +363,32 @@ pbmc |>
   add_markers(size = I(1))
 ```
 
-## Exercises
+# Exercises
 
-1. What proportion of all cells are gamma-delta T cells? Use signature_score > 0.8 to identify gamma-delta T cells.
+1. What proportion of all cells are gamma-delta T cells? Use signature_score > 0.7 to identify gamma-delta T cells.
 
 2. There is a cluster of cells characterised by a low RNA output (nCount_RNA < 100). Identify the cell composition (cell_type) of that cluster.
 
 # Pseudobulk analyses
 
-It is sometime useful to aggregate cell-wise transcript abundance into pseudobulk samples. It is possible to explore data and perform hypothesis testing with tools and data-source that we are more familiar with. For example, we can use edgeR in tidybulk to perform differential expression testing. For more details on pseudobulk analysis see [here](https://hbctraining.github.io/scRNA-seq/lessons/pseudobulk_DESeq2_scrnaseq.html).
+Now we want to identify genes whose transcription is associated with treatment, pseudo bulk analysis is how we can do this. It aggregates cell-wise transcript abundance into pseudobulk samples and enables us to perform hypothesis testing with tools and data-source that we are more familiar with. For example, we can use edgeR in tidybulk to perform differential expression testing. For more details on pseudobulk analysis see [here](https://hbctraining.github.io/scRNA-seq/lessons/pseudobulk_DESeq2_scrnaseq.html).
+
+We want to do it for each cell type and the tidy transcriptomic ecosystem makes this very easy. 
 
 
-### Data exploration using pseudobulk samples
+## Data exploration using pseudobulk samples
 
 To do this, we will use a helper function called `aggregate_cells`, available in this workshop package, to combine the single cells into groups for each cell type for each sample.
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE}
 library(glue)
 library(tidyr)
-library(tidybulk)
-library(tidySummarizedExperiment)
 library(purrr)
 library(patchwork)
+
+# bulk RNA-seq libraries
+library(tidybulk)
+library(tidySummarizedExperiment)
 ```
 
 ```{r}
@@ -393,27 +399,29 @@ pseudo_bulk <-
 pseudo_bulk
 ```
 
-### Tidybulk and tidySummarizedExperiment
+## Tidybulk and tidySummarizedExperiment
 
 With `tidySummarizedExperiment` and `tidybulk` is easy to stratify our dataset for iterative self-contained analyses.
 
-# <img src="../inst/new_SE_usage-01.png" width="800px" />
+```{r, echo=FALSE, out.width = "800px"}
+knitr::include_graphics("../inst/vignettes/new_SE_usage-01.png")
+```
 
-
-To explore the grouping, we can use tidyverse `slice` to choose a row (cell_type) and `pull` to extract the values from a column. If we pull the data column we can view the SummarizedExperiment object. 
 
 ```{r}
 pseudo_bulk |>
   nest(data = -cell_type)
+```
+To explore the grouping, we can use tidyverse `slice` to choose a row (cell_type) and `pull` to extract the values from a column. If we pull the data column we can view the SummarizedExperiment object. 
 
-
+```{r}
 pseudo_bulk |>
   nest(data = -cell_type) |> 
   slice(1) |>
   pull(data)
 ```
 
-We can then identify differentially expressed genes for each cell type for our condition of interest, progressive versus stable metastatic breast cancer.
+We can then identify differentially expressed genes for each cell type for our condition of interest, treated versus untreated patients.
 
 ```{r message=FALSE, warning=FALSE}
 # Differential transcription abundance
@@ -421,30 +429,45 @@ pseudo_bulk <-
   pseudo_bulk |>
 
   nest(data = -cell_type) |> 
-  
+    
+  # map inputs a data column (.x)  
   mutate(data = map(
     data,
     ~ .x |>
+        
+      # Now using tidybulk on SummarizedExperiment    
       identify_abundant(factor_of_interest = treatment) |>
-      scale_abundance() |>
+      scale_abundance() |> 
       test_differential_abundance(~treatment)
   ))
-
 ```
 
+```{r}
+pseudo_bulk
+```
+
+```{r}
+pseudo_bulk |> 
+  slice(1) |>
+  pull(data)
+```
+
+Now we can create plots for significant genes for each cell type, visualising their transcriptional abundance, without needing to create multiple objects. 
 
 ```{r message = FALSE}
 pseudo_bulk <-
     
-	pseudo_bulk |>
+  pseudo_bulk |>
     
   # Filter out significant
   mutate(data = map(data, ~ filter(.x, FDR < 0.5))) |>
 	
-	# Filter cell types with no differential abundant gene-transcripts
+  # Filter cell types with no differential abundant gene-transcripts
+  # map_int is map that returns integer
   filter(map_int(data, ~ nrow(.x)) > 0) |>
     
   # Plot
+  # map2 is map that accepts 2 input columns (.x, .y) 
   mutate(plot = map2(
     data, cell_type,
     ~ .x |>
