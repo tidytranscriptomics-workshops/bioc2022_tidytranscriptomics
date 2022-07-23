@@ -44,7 +44,10 @@ sce_obj =
 	rename(cell_type = curated_cell_type) |> 
 
 	# filtering because of to few samples per cell types
-	filter(cell_type !="CD8+_Tem")
+	filter(cell_type !="CD8+_Tem") |> 
+	
+	# Replace file path
+	mutate(file = file |> str_replace("bhupinder_10X_260819", "single_cell"))
 
 # job::job({
 	save(sce_obj , file="data/sce_obj.rda", compress = "xz")

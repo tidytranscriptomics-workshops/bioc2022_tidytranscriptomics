@@ -10,3 +10,5 @@ bioc2022tidytranscriptomics*.tgz
 dev
 /doc/
 /Meta/
+.DS_Store
+._.DS_Store

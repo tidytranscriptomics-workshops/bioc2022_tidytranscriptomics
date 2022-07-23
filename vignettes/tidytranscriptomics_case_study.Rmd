@@ -453,16 +453,16 @@ We use tidyverse `nest` to group the data. The command below will create a tibbl
 
 ```{r}
 pseudo_bulk |>
-  nest(data = -cell_type)
+  nest(grouped_summarized_experiment = -cell_type)
 ```
 
 To explore the grouping, we can use tidyverse `slice` to choose a row (cell_type) and `pull` to extract the values from a column. If we pull the data column we can view the SummarizedExperiment object. 
 
 ```{r}
 pseudo_bulk |>
-  nest(data = -cell_type) |>
+  nest(grouped_summarized_experiment = -cell_type) |>
   slice(1) |>
-  pull(data)
+  pull(grouped_summarized_experiment)
 ```
 
 We can then identify differentially expressed genes for each cell type for our condition of interest, treated versus untreated patients. We use tidyverse `map` to apply differential expression functions to each cell type group in the nested data. 
@@ -473,11 +473,11 @@ pseudo_bulk <-
     
   pseudo_bulk |>
     
-  nest(data = -cell_type) |>
+  nest(grouped_summarized_experiment = -cell_type) |>
     
   # map accepts a data column (.x) and applies functions to each element
-  mutate(data = map(
-    data,
+  mutate(grouped_summarized_experiment = map(
+    grouped_summarized_experiment,
     ~ .x |>
       # Now using tidybulk on SummarizedExperiment
       identify_abundant(factor_of_interest = treatment) |>
@@ -497,7 +497,7 @@ If we pull out the SummarizedExperiment object for the first cell type, as befor
 ```{r}
 pseudo_bulk |>
   slice(1) |>
-  pull(data)
+  pull(grouped_summarized_experiment)
 ```
 
 Now we can create plots for significant genes for each cell type, visualising their transcriptional abundance, also without needing to create multiple objects. 
@@ -509,16 +509,19 @@ pseudo_bulk <-
     
   # Filter out significant
   # using a high FDR value as this is toy data
-  mutate(data = map(data, ~ filter(.x, FDR < 0.5))) |>
+  mutate(grouped_summarized_experiment = map(
+  	grouped_summarized_experiment, 
+  	~ filter(.x, FDR < 0.5)
+  )) |>
     
   # Filter cell types with no differential abundant gene-transcripts
   # map_int is map that returns integer instead of list
-  filter(map_int(data, ~ nrow(.x)) > 0) |>
+  filter(map_int(grouped_summarized_experiment, ~ nrow(.x)) > 0) |>
 
   # Plot
   # map2 is map that accepts 2 input columns (.x, .y)
   mutate(plot = map2(
-    data, cell_type,
+    grouped_summarized_experiment, cell_type,
     ~ .x |>
       ggplot(aes(treatment, counts_scaled + 1)) +
       geom_boxplot(aes(fill = treatment)) +
