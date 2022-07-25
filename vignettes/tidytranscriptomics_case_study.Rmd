@@ -69,9 +69,9 @@ Easiest way to run this material. We will use the Orchestra Cloud platform durin
 
 1. Go to [Orchestra](http://app.orchestra.cancerdatasci.org/).
 2. Log in.
-3. Search for the workshop called "BioC2022: Tidy Transcriptomics For Single-Cell RNA Sequencing Analyses" **There are several tidy transcriptomics workshops. Be sure to select the BioC2022 one**.
-4. Click "Launch" (may take a minute or two).
-5. Follow instructions..
+3. Find the workshop. In the search box type bioc2022, sort by Created column, and select the most recently created workshop called "BioC2022: Tidy Transcriptomics For Single-Cell RNA Sequencing Analyses" **There are several tidy transcriptomics workshops. Be sure to select the BioC2022 one with the most recent created date**.
+4. Click "Launch" (may take a minute or two). 
+5. Follow instructions.. **Do not share your personalized URL for the RStudio session, or use the trainers, as only one browser at a time can be connected.**
 6. Open `tidytranscriptomics_case_study.Rmd` in `bioc2022_tidytranscriptomcs/vignettes` folder
 
 ### Local
