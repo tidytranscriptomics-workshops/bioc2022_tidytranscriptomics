@@ -92,7 +92,7 @@ Alternatively, you can view the material at the workshop webpage [here](https://
 </iframe>
 
 
-# Introduction to tidySingleCellExperiment
+# Part 1 Introduction to tidySingleCellExperiment
 
 ```{r message = FALSE}
 # Load packages
@@ -169,13 +169,13 @@ A couple of things to note with `select`
 * As we did not output the .cell column we get a tibble instead of a SingleCellExperiment object and a message to let us know: `tidySingleCellExperiment says: Key columns are missing. A data frame is returned for independent data analysis.` This is ok as it's what we want here when viewing the columns.
 
 * If we use `select` to output the .cell (key) column we will also get any view-only columns returned, such as the UMAP columns generated during the preprocessing.
-    ```{r}
+    ```{r message=FALSE}
 sce_obj |> select(.cell, nCount_RNA, Phase)
     ```
 
 We can use `mutate` to create a column. For example, we could create a new `Phase_l` column that contains a lower-case version of `Phase`.
 
-```{r}
+```{r message=FALSE}
 sce_obj |>
   mutate(Phase_l = tolower(Phase)) |>
   select(Phase, Phase_l)
@@ -183,7 +183,7 @@ sce_obj |>
 
 We can use tidyverse commands to polish an annotation column. We will extract the sample, and group information from the file name column into separate columns.
 
-```{r}
+```{r message=FALSE}
 # First take a look at the file column
 sce_obj |> select(file)
 ```
@@ -200,7 +200,7 @@ sce_obj |> select(sample, everything())
 
 We could use tidyverse `unite` to combine columns, for example to create a new column for sample id combining the sample and patient id (BCB) columns.
 
-```{r}
+```{r message=FALSE}
 sce_obj <- sce_obj |> unite("sample_id", sample, BCB, remove = FALSE)
 
 # Take a look
@@ -208,7 +208,7 @@ sce_obj |> select(sample_id, sample, BCB)
 ```
 
 
-# Case study
+# Part 2 Signature visualisation
 
 ## Data pre-processing
 
@@ -319,7 +319,7 @@ sce_obj_gamma_delta <-
   filter(signature_score > 0.7)
 ```
 
-For comparison, we show the alternative using base R and SingleCellExperiment.
+For comparison, we show the alternative using base R and SingleCellExperiment. Note that the code contains more redundancy and intermediate objects.
 
 ```{r eval=FALSE}
 counts_positive <-
@@ -339,45 +339,31 @@ sce_obj_gamma_delta <- sce_obj[, sce_obj$signature_score > 0.7]
 
 We can then focus on just these gamma delta T cells and chain Bioconductor and tidyverse commands together to analyse.
 
-```{r eval = FALSE}
+```{r warning=FALSE, message=FALSE}
 library(batchelor)
-library(igraph)
 library(scater)
-library(scran)
-library(magrittr)
 
 sce_obj_gamma_delta <-
     
   sce_obj_gamma_delta |>
     
-  # Reanalyse
+  # Integrate - using batchelor.
   multiBatchNorm(batch = colData(sce_obj_gamma_delta)$sample) |>
   fastMNN(batch = colData(sce_obj_gamma_delta)$sample) |>
     
-  # Join old information
+  # Join metadata removed by fastMNN - using tidyverse
   left_join(as_tibble(sce_obj_gamma_delta)) |>
     
-  # Dimension reduction
+  # Dimension reduction - using scater
   runUMAP(ncomponents = 2, dimred = "corrected")
-
-# Assign clusters to the 'colLabels'
-# of the SingleCellExperiment object
-sce_obj_gamma_delta <-
-    
-  sce_obj_gamma_delta |>
-    
-  mutate(
-    cluster =
-      colLabels(sce_obj_gamma_delta) <- # from SingleCellExperiment
-        sce_obj_gamma_delta |>
-        buildSNNGraph(use.dimred = "corrected") |> # from scran - shared nearest neighbour
-        cluster_walktrap() %$% # from igraph
-        membership
-  )
-
-
-sce_obj_gamma_delta |> select(batch, cluster, everything())
 ```
+
+Visualise gamma delta T cells.
+
+```{r}	
+sce_obj_gamma_delta |> plotUMAP()	
+```
+
 
 It is also possible to visualise the cells as a 3D plot using plotly.
 The example data used here only contains a few genes, for the sake of time and size in this demonstration, but below is how you could generate the 3 dimensions needed for 3D plot with a full dataset. 
@@ -411,7 +397,7 @@ Using the `sce_obj`:
 
 2. There is a cluster of cells characterised by a low RNA output (nCount_RNA < 100). Identify the cell composition (cell_type) of that cluster.
 
-# Pseudobulk analyses
+# Part 3 Pseudobulk analyses
 
 Next we want to identify genes whose transcription is affected by treatment in this dataset, comparing treated and untreated patients. We can do this with pseudobulk analysis. We aggregate cell-wise transcript abundance into pseudobulk samples and can then perform hypothesis testing using the very well established bulk RNA sequencing tools. For example, we can use edgeR in tidybulk to perform differential expression testing. For more details on pseudobulk analysis see [here](https://hbctraining.github.io/scRNA-seq/lessons/pseudobulk_DESeq2_scrnaseq.html).
 
@@ -446,7 +432,7 @@ pseudo_bulk
 With `tidySummarizedExperiment` and `tidybulk` it is easy to split the data into groups and perform analyses on each without needing to create separate objects.
 
 ```{r, echo=FALSE, out.width = "800px"}
-knitr::include_graphics("../inst/vignettes/new_SE_usage-01.png")
+knitr::include_graphics("../man/figures/new_SE_usage-01.png")
 ```
 
 We use tidyverse `nest` to group the data. The command below will create a tibble containing a column with a SummarizedExperiment object for each cell type. `nest` is similar to tidyverse `group_by`, except with `nest` each group is stored in a single row, and can be a complex object such as a plot or SummarizedExperiment.
@@ -475,14 +461,19 @@ pseudo_bulk <-
     
   pseudo_bulk_nested |>
     
-  # map accepts a data column (.x) and applies functions to each element
+  # map accepts a data column (.x) and a function. It applies the function to each element of the column.
   mutate(grouped_summarized_experiment = map(
     grouped_summarized_experiment,
     ~ .x |>
-      # Using tidybulk with SummarizedExperiment input
+        
+      # Removing genes with low expression
       identify_abundant(factor_of_interest = treatment) |>
-      scale_abundance() |>
-      test_differential_abundance(~treatment)
+        
+      # Scaling counts for sequencing depth	
+      scale_abundance(method="TMMwsp") |>
+      
+      # Testing for differential expression using edgeR quasi likelihood	
+      test_differential_abundance(~treatment, method="edgeR_quasi_likelihood")
   ))
 ```
 
@@ -500,7 +491,7 @@ pseudo_bulk |>
   pull(grouped_summarized_experiment)
 ```
 
-Now we can create plots for significant genes for each cell type, visualising their transcriptional abundance, also without needing to create multiple objects. 
+It is useful to create plots for significant genes to visualise the transcriptional abundance in the groups being compared (treated and untreated). We can do this for each cell type without needing to create multiple objects. 
 
 ```{r message = FALSE}
 pseudo_bulk <-
@@ -518,8 +509,8 @@ pseudo_bulk <-
   # map_int is map that returns integer instead of list
   filter(map_int(grouped_summarized_experiment, ~ nrow(.x)) > 0) |>
 
-  # Plot
-  # map2 is map that accepts 2 input columns (.x, .y)
+  # Plot significant genes for each cell type
+  # map2 is map that accepts 2 input columns (.x, .y) and a function
   mutate(plot = map2(
     grouped_summarized_experiment, cell_type,
     ~ .x |>
