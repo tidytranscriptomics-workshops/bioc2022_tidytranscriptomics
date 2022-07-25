@@ -43,6 +43,7 @@ Imports:
     broom,
     devtools,
     rlang,
+    magrittr,
     R.utils,
     dittoSeq,
     glue,
