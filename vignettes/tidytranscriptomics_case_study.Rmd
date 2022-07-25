@@ -555,6 +555,11 @@ pseudo_bulk |>
   bioc2022tidytranscriptomics::theme_multipanel
 ```
 
+# Feedback
+
+Thank you for attending this workshop. We hope it was an informative session for you. We would be grateful if you could help us by taking a few moments to provide your valuable feedback in the short form below. Your feedback will provide us with an opportunity to further improve the workshop. All the results are anonymous. 
+
+[Feedback Form Link](https://forms.gle/rVzZo6k8QfYW2jJx6) 
 
 **Session Information**
 
