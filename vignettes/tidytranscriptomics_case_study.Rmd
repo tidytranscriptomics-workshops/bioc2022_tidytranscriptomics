@@ -452,34 +452,34 @@ knitr::include_graphics("../inst/vignettes/new_SE_usage-01.png")
 We use tidyverse `nest` to group the data. The command below will create a tibble containing a column with a SummarizedExperiment object for each cell type. `nest` is similar to tidyverse `group_by`, except with `nest` each group is stored in a single row, and can be a complex object such as a plot or SummarizedExperiment.
 
 ```{r}
-pseudo_bulk |>
+pseudo_bulk_nested <- 
+  pseudo_bulk |>
   nest(grouped_summarized_experiment = -cell_type)
+
+pseudo_bulk_nested
 ```
 
 To explore the grouping, we can use tidyverse `slice` to choose a row (cell_type) and `pull` to extract the values from a column. If we pull the data column we can view the SummarizedExperiment object. 
 
 ```{r}
-pseudo_bulk |>
-  nest(grouped_summarized_experiment = -cell_type) |>
+pseudo_bulk_nested |>
   slice(1) |>
   pull(grouped_summarized_experiment)
 ```
 
-We can then identify differentially expressed genes for each cell type for our condition of interest, treated versus untreated patients. We use tidyverse `map` to apply differential expression functions to each cell type group in the nested data. 
+We can then identify differentially expressed genes for each cell type for our condition of interest, treated versus untreated patients. We use tidyverse `map` to apply differential expression functions to each cell type group in the nested data. The result columns will be added to the SummarizedExperiment objects.
 
 ```{r message=FALSE, warning=FALSE}
 # Differential transcription abundance
 pseudo_bulk <-
     
-  pseudo_bulk |>
-    
-  nest(grouped_summarized_experiment = -cell_type) |>
+  pseudo_bulk_nested |>
     
   # map accepts a data column (.x) and applies functions to each element
   mutate(grouped_summarized_experiment = map(
     grouped_summarized_experiment,
     ~ .x |>
-      # Now using tidybulk on SummarizedExperiment
+      # Using tidybulk with SummarizedExperiment input
       identify_abundant(factor_of_interest = treatment) |>
       scale_abundance() |>
       test_differential_abundance(~treatment)
