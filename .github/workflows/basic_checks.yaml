@@ -1,7 +1,7 @@
 on: [push]
 
 env:
-  cache-version: v3
+  cache-version: v4
   repo-name: tidytranscriptomics-workshops/bioc2022_tidytranscriptomics
 
 jobs:
