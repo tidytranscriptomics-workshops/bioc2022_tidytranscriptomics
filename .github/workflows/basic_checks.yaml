@@ -17,7 +17,7 @@ jobs:
       - name: Query dependencies and update old packages
         run: |
           # We'll install the specific versions needed
-          BiocManager::install("stemangiola/tidySingleCellExperiment@v1.7.2")
+          BiocManager::install("stemangiola/tidySingleCellExperiment@v1.7.4")
           BiocManager::install("stemangiola/tidySummarizedExperiment@v1.7.3")
           BiocManager::install("stemangiola/tidybulk@v1.9.2")
           
