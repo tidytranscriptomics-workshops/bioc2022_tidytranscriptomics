@@ -162,7 +162,7 @@ sce_obj |> filter(Phase == "G1")
 We can use `select` to view columns, for example, to see the filename, total cellular RNA abundance and cell phase.
 
 ```{r}
-sce_obj |> select(file, nCount_RNA, Phase)
+sce_obj |> select(.cell, file, nCount_RNA, Phase)
 ```
 A couple of things to note with `select`
 
@@ -178,14 +178,14 @@ We can use `mutate` to create a column. For example, we could create a new `Phas
 ```{r message=FALSE}
 sce_obj |>
   mutate(Phase_l = tolower(Phase)) |>
-  select(Phase, Phase_l)
+  select(.cell, Phase, Phase_l)
 ```
 
 We can use tidyverse commands to polish an annotation column. We will extract the sample, and group information from the file name column into separate columns.
 
 ```{r message=FALSE}
 # First take a look at the file column
-sce_obj |> select(file)
+sce_obj |> select(.cell, file)
 ```
 
 ```{r}
@@ -195,7 +195,7 @@ sce_obj <- sce_obj |>
   extract(file, "sample", "../data/.*/([a-zA-Z0-9_-]+)/outs.+", remove = FALSE)
 
 # Take a look
-sce_obj |> select(sample, everything())
+sce_obj |> select(.cell, sample, everything())
 ```
 
 We could use tidyverse `unite` to combine columns, for example to create a new column for sample id combining the sample and patient id (BCB) columns.
@@ -204,7 +204,7 @@ We could use tidyverse `unite` to combine columns, for example to create a new c
 sce_obj <- sce_obj |> unite("sample_id", sample, BCB, remove = FALSE)
 
 # Take a look
-sce_obj |> select(sample_id, sample, BCB)
+sce_obj |> select(.cell, sample_id, sample, BCB)
 ```
 
 
@@ -254,7 +254,7 @@ sce_obj |>
         scales::rescale(CD8A + CD8B, to = c(0, 1))
   ) |>
     
-  select(signature_score, everything())
+  select(.cell, signature_score, everything())
 ```
 
 The gamma delta T cells could then be visualised by the signature score using Bioconductor's visualisation functions.
@@ -474,7 +474,7 @@ pseudo_bulk <-
       scale_abundance(method="TMMwsp") |>
       
       # Testing for differential expression using edgeR quasi likelihood	
-      test_differential_abundance(~treatment, method="edgeR_quasi_likelihood")
+      test_differential_abundance(~treatment, method="edgeR_quasi_likelihood", scaling_method="TMMwsp")
   ))
 ```
 
