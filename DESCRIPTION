@@ -1,6 +1,6 @@
 Package: bioc2022tidytranscriptomics
 Title: Tidy Transcriptomics For Single-Cell RNA Sequencing Analyses
-Version: 0.13.2
+Version: 0.13.3
 Authors@R: c(
     person("Stefano", "Mangiola", email="mangiola.s@wehi.edu.au",
     role = c("aut","cre"),
