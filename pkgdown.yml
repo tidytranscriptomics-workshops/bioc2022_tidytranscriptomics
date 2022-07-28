@@ -4,8 +4,8 @@ pkgdown_sha: ~
 articles:
   solutions: solutions.html
   supplementary: supplementary.html
-  tidytranscriptomics_workshop: tidytranscriptomics_workshop.html
-last_built: 2022-07-28T17:29Z
+  tidytranscriptomics_case_study: tidytranscriptomics_case_study.html
+last_built: 2022-07-28T22:13Z
 urls:
   reference: https://tidytranscriptomics-workshops.github.io/iscb2021_tidytranscriptomics/reference
   article: https://tidytranscriptomics-workshops.github.io/iscb2021_tidytranscriptomics/articles
