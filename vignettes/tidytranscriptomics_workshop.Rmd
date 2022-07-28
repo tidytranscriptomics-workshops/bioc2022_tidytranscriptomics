@@ -161,17 +161,11 @@ sce_obj |> filter(Phase == "G1")
 
 We can use `select` to view columns, for example, to see the filename, total cellular RNA abundance and cell phase.
 
+* If we use `select` we will also get any view-only columns returned, such as the UMAP, PCA columns generated during the preprocessing.
+
 ```{r}
 sce_obj |> select(file, nCount_RNA, Phase)
 ```
-A couple of things to note with `select`
-
-* As we did not output the .cell column we get a tibble instead of a SingleCellExperiment object and a message to let us know: `tidySingleCellExperiment says: Key columns are missing. A data frame is returned for independent data analysis.` This is ok as it's what we want here when viewing the columns.
-
-* If we use `select` to output the .cell (key) column we will also get any view-only columns returned, such as the UMAP columns generated during the preprocessing.
-    ```{r message=FALSE}
-sce_obj |> select(.cell, nCount_RNA, Phase)
-    ```
 
 We can use `mutate` to create a column. For example, we could create a new `Phase_l` column that contains a lower-case version of `Phase`.
 
