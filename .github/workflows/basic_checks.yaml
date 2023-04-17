@@ -1,8 +1,9 @@
-on: [push]
+name: Check, build, and push image
+
+on: [push, pull_request]
 
 env:
-  cache-version: v4
-  repo-name: tidytranscriptomics-workshops/bioc2022_tidytranscriptomics
+  cache-version: v1
 
 jobs:
   r-build-and-check:
@@ -16,12 +17,6 @@ jobs:
 
       - name: Query dependencies and update old packages
         run: |
-          # We'll install the specific versions needed
-          BiocManager::install("stemangiola/tidySingleCellExperiment@v1.7.4")
-          BiocManager::install("stemangiola/tidySummarizedExperiment@v1.7.3")
-          BiocManager::install("stemangiola/tidybulk@v1.9.2")
-          
-          # Then install the other dependencies in the usual way
           BiocManager::install(ask=FALSE)
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
         shell: Rscript {0}
@@ -33,20 +28,19 @@ jobs:
           path: /usr/local/lib/R/site-library
           key: ${{ env.cache-version }}-${{ runner.os }}-r-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ env.cache-version }}-${{ runner.os }}-r-
-          
-       # This lets us augment with additional dependencies
+
+      # This lets us augment with additional dependencies
       - name: Install system dependencies
         if: runner.os == 'Linux'
         env:
           RHUB_PLATFORM: linux-x86_64-ubuntu-gcc
         run: |
-          Rscript -e "remotes::install_github('r-hub/sysreqs')"	
-          sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")	
+          Rscript -e "remotes::install_github('r-hub/sysreqs')"
+          sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
           sudo -s eval "$sysreqs"
           
       - name: Install dependencies
         run: |
-          options(repos = c(CRAN = "https://cran.r-project.org"))
           BiocManager::repositories()
           remotes::install_deps(dependencies = TRUE, repos = BiocManager::repositories())
           remotes::install_cran("rcmdcheck")
@@ -55,29 +49,26 @@ jobs:
       - name: Check
         env:
           _R_CHECK_CRAN_INCOMING_REMOTE_: false
-        run: rcmdcheck::rcmdcheck(args = c("--no-manual"), error_on = "error", check_dir = "check")
+        run: rcmdcheck::rcmdcheck(args = c("--no-manual"), error_on = "warning", check_dir = "check")
         shell: Rscript {0}
+      
 
       - name: Build pkgdown
-        if: github.ref == 'refs/heads/master' 
         run: |
            PATH=$PATH:$HOME/bin/ Rscript -e 'pkgdown::build_site(".")'
 
       # deploy needs rsync? Seems so.
       - name: Install deploy dependencies
-        if: github.ref == 'refs/heads/master'
         run: |
           apt-get update
           apt-get -y install rsync
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
-        if: github.ref == 'refs/heads/master'
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages # The branch the action should deploy to.
-          FOLDER: docs # The folder the action should deploy
-
+          FOLDER: docs # The folder the action should deploy.
   docker-build-and-push:
     #needs: r-build-and-check
     runs-on: ubuntu-latest
@@ -87,10 +78,11 @@ jobs:
       # This is used to complete the identity challenge
       # with sigstore/fulcio when running outside of PRs.
       id-token: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
+        
       - name: Set Environment Variables
         run: |
           REPO_LOWER="$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')"
@@ -99,10 +91,12 @@ jobs:
           echo "GIT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
           echo "REGISTRY=${REGISTRY}" >> $GITHUB_ENV
           echo "IMAGE=${REGISTRY}/${REPO_LOWER}" >> $GITHUB_ENV
-
+          
       - name: Show environment
         run: |
           env
+
+
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
       - name: Install cosign
@@ -110,9 +104,12 @@ jobs:
         uses: sigstore/cosign-installer@1e95c1de343b5b0c23352d6417ee3e48d5bcd422
         with:
           cosign-release: 'v1.4.0'
+
+
       # Workaround: https://github.com/docker/build-push-action/issues/461
       - name: Setup Docker buildx
         uses: docker/setup-buildx-action@79abd3f86f79a9d68a23c75a09a9a85889262adf
+
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
@@ -130,6 +127,7 @@ jobs:
         uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
         with:
           images: ${{ env.IMAGE }}
+
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
@@ -141,15 +139,4 @@ jobs:
           tags: |
             ${{ env.IMAGE }}:latest
             ${{ env.IMAGE }}:${{ env.GIT_SHA }}
-      # Sign the resulting Docker image digest except on PRs.
-      # This will only write to the public Rekor transparency log when the Docker
-      # repository is public to avoid leaking data.  If you would like to publish
-      # transparency data even for private images, pass --force to cosign below.
-      # https://github.com/sigstore/cosign
-      - name: Sign the published Docker image
-        if: ${{ github.event_name != 'pull_request' }}
-        env:
-          COSIGN_EXPERIMENTAL: "true"
-        # This step uses the identity token to provision an ephemeral certificate
-        # against the sigstore community Fulcio instance.
-        run: cosign sign ${{ env.IMAGE }}@${{ steps.build-and-push.outputs.digest }}
+
